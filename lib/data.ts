@@ -124,6 +124,7 @@ export interface Lesson {
   quizId?: string
   isCompleted?: boolean
   icon: LucideIcon
+  hasResources?: boolean
 }
 
 export interface CourseSection {
@@ -364,6 +365,7 @@ export const courses: Course[] = [
             textContent:
               "A indústria offshore abrange a exploração e produção de petróleo e gás em alto mar. Envolve plataformas fixas, flutuantes, navios especializados e uma complexa cadeia logística. Os principais desafios incluem condições ambientais severas, isolamento e a necessidade de rigorosos padrões de segurança.",
             icon: FileText,
+            hasResources: true,
           },
           {
             id: "l1_cbsp_mod1_aula3",
@@ -372,6 +374,7 @@ export const courses: Course[] = [
             duration: "15 min",
             videoUrl: "/placeholder-video.mp4",
             icon: PlaySquare,
+            hasResources: true,
           },
           {
             id: "l1_cbsp_mod1_aula4",
@@ -468,6 +471,7 @@ export const courses: Course[] = [
             textContent:
               "A CIPA tem como objetivo a prevenção de acidentes e doenças decorrentes do trabalho, de modo a tornar compatível permanentemente o trabalho com a preservação da vida e a promoção da saúde do trabalhador. Sua importância reside no papel ativo dos trabalhadores na identificação e controle dos riscos.",
             icon: FileText,
+            hasResources: true,
           },
           {
             id: "l1_nr05_aula3",
@@ -475,6 +479,7 @@ export const courses: Course[] = [
             type: "video",
             duration: "15 min",
             icon: PlaySquare,
+            hasResources: true,
           },
         ],
       },
@@ -504,6 +509,7 @@ export const courses: Course[] = [
             textContent:
               "Identificar riscos, elaborar plano de trabalho, participar da implementação de medidas preventivas, divulgar informações de segurança, entre outras.",
             icon: FileText,
+            hasResources: true,
           },
         ],
       },

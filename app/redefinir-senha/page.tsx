@@ -47,21 +47,37 @@ export default function RedefinirSenhaPage() {
     }
   }, [searchParams, router]) // Executa quando searchParams ou router mudam.
 
+  const validatePassword = (password: string): string[] => {
+    const errors: string[] = []
+    if (password.length < 8) {
+      errors.push("A senha deve ter pelo menos 8 caracteres")
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push("A senha deve conter pelo menos uma letra maiúscula")
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push("A senha deve conter pelo menos uma letra minúscula")
+    }
+    if (!/\d/.test(password)) {
+      errors.push("A senha deve conter pelo menos um número")
+    }
+    return errors
+  }
+
   // handleResetPassword: Função chamada quando o formulário de redefinição de senha é submetido.
   // event: Objeto do evento do formulário.
   const handleResetPassword = (event: React.FormEvent) => {
     event.preventDefault() // Previne o comportamento padrão do formulário.
     setError("") // Limpa erros anteriores.
 
-    // Verifica se as senhas digitadas são iguais.
-    if (newPassword !== confirmNewPassword) {
-      setError("As senhas não conferem. Tente novamente.")
-      return // Interrompe a função se as senhas forem diferentes.
+    const passwordErrors = validatePassword(newPassword)
+    if (passwordErrors.length > 0) {
+      setError(passwordErrors.join(". "))
+      return
     }
 
-    // Verifica se a nova senha tem um comprimento mínimo (exemplo).
-    if (newPassword.length < 6) {
-      setError("A nova senha deve ter pelo menos 6 caracteres.")
+    if (newPassword !== confirmNewPassword) {
+      setError("As senhas não coincidem.")
       return
     }
 
@@ -86,7 +102,7 @@ export default function RedefinirSenhaPage() {
         <Card className="w-full max-w-md shadow-xl">
           <CardHeader className="text-center">
             <KeyRound className="mx-auto h-12 w-12 text-teal-600 mb-2" />
-            <CardTitle className="text-2xl font-bold text-neutral-800">Redefinir sua Senha</CardTitle>
+            <CardTitle className="text-2xl font-bold text-neutral-800">Definir Nova Senha</CardTitle>
             {!success ? (
               <CardDescription>Crie uma nova senha para sua conta.</CardDescription>
             ) : (
@@ -102,7 +118,7 @@ export default function RedefinirSenhaPage() {
                   <Input
                     id="newPassword"
                     type="password"
-                    placeholder="Digite sua nova senha"
+                    placeholder="Nova Senha"
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)} // Atualiza o estado da nova senha.
@@ -113,7 +129,7 @@ export default function RedefinirSenhaPage() {
                   <Input
                     id="confirmNewPassword"
                     type="password"
-                    placeholder="Confirme sua nova senha"
+                    placeholder="Confirmar Nova Senha"
                     required
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)} // Atualiza o estado da confirmação.
@@ -122,7 +138,7 @@ export default function RedefinirSenhaPage() {
                 {/* Exibe mensagem de erro, se houver. */}
                 {error && <p className="text-sm text-red-600">{error}</p>}
                 <Button type="submit" className="w-full bg-teal-600 hover:bg-teal-700">
-                  Redefinir Senha
+                  Salvar Nova Senha
                 </Button>
               </form>
             ) : (

@@ -74,9 +74,7 @@ export default function MeusCursosPage() {
                       </Button>
                     ) : (
                       <Button asChild className="w-full bg-teal-600 hover:bg-teal-700">
-                        <Link href={`/curso-exemplo?id=${course.courseId}`}>
-                          {" "}
-                          {/* Adjust link as needed */}
+                        <Link href={`/curso/${course.courseId}`}>
                           <PlayCircle className="mr-2 h-4 w-4" /> Acessar Curso
                         </Link>
                       </Button>

@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 
 import Link from "next/link"
 import { useRouter } from "next/navigation" // Changed from 'next/navigation'
@@ -14,6 +15,8 @@ import { AnchorIcon } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
+  const [cpf, setCpf] = useState("")
+  const [cpfError, setCpfError] = useState("")
 
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault()
@@ -25,6 +28,16 @@ export default function LoginPage() {
     // The "Simular Login" button on Navbar itself can be used for visual testing.
     alert("Login simulado! Redirecionando para a home.")
     router.push("/")
+  }
+
+  const handleForgotPassword = () => {
+    if (!cpf.trim()) {
+      setCpfError("Informe seu CPF para prosseguir com a troca de senha.")
+      return
+    }
+    // Clear error and redirect to confirmation page
+    setCpfError("")
+    router.push(`/confirmar-email?cpf=${encodeURIComponent(cpf)}`)
   }
 
   return (
@@ -41,7 +54,19 @@ export default function LoginPage() {
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="cpf">CPF</Label>
-                <Input id="cpf" type="text" placeholder="000.000.000-00" required />
+                <Input
+                  id="cpf"
+                  type="text"
+                  placeholder="000.000.000-00"
+                  required
+                  value={cpf}
+                  onChange={(e) => {
+                    setCpf(e.target.value)
+                    if (cpfError) setCpfError("")
+                  }}
+                  className={cpfError ? "border-red-500 focus:border-red-500" : ""}
+                />
+                {cpfError && <p className="text-sm text-red-600">{cpfError}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
@@ -53,9 +78,14 @@ export default function LoginPage() {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center space-y-2">
-            <Link href="#" className="text-sm text-teal-600 hover:underline">
+            <Button
+              type="button"
+              variant="link"
+              onClick={handleForgotPassword}
+              className="text-sm text-teal-600 hover:underline p-0"
+            >
               Esqueceu sua senha?
-            </Link>
+            </Button>
             <p className="text-sm text-muted-foreground">
               Não tem uma conta?{" "}
               <Link href="/cadastro" className="font-medium text-teal-600 hover:underline">

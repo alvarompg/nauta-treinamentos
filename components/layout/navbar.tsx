@@ -133,10 +133,7 @@ export default function Navbar() {
                       {userCourses.length > 0 ? (
                         userCourses.map((course) => (
                           <DropdownMenuItem key={course.id} asChild>
-                            <Link
-                              href={`/curso-exemplo?id=${course.courseId}`}
-                              className="flex flex-col items-start w-full"
-                            >
+                            <Link href={`/curso/${course.courseId}`} className="flex flex-col items-start w-full">
                               <span className="text-sm font-medium">{course.name}</span>
                               <div className="w-full flex items-center gap-2 mt-1">
                                 <Progress value={course.progress} className="h-1.5 flex-grow" />
@@ -273,7 +270,7 @@ export default function Navbar() {
                 ) : (
                   <>
                     <SheetClose asChild>
-                      <Button asChild className="w-full" variant="outline">
+                      <Button asChild className="w-full bg-transparent" variant="outline">
                         <Link href="/login">Login</Link>
                       </Button>
                     </SheetClose>
