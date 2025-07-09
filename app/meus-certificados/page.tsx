@@ -16,7 +16,7 @@ export default function MeusCertificadosPage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow py-12 md:py-16 bg-slate-50">
-        <div className="container px-4 sm:px-6 lg:px-8">
+        <div className="container">
           <div className="flex items-center gap-3 mb-8">
             <Award className="h-8 w-8 text-teal-600" />
             <h1 className="text-3xl md:text-4xl font-bold text-neutral-800">Meus Certificados</h1>

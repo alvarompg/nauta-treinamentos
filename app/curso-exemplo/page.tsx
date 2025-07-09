@@ -48,7 +48,7 @@ export default function CursoDetalhesPage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="bg-slate-800 text-white py-16 md:py-24 overflow-hidden">
-          <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="container">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <ScrollRevealSection delay={0.1}>
@@ -57,15 +57,13 @@ export default function CursoDetalhesPage() {
                   </span>
                 </ScrollRevealSection>
                 <AnimatedHeading
-                  text="Vitrine de Cursos"
+                  text={course.name}
                   className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight my-3 text-balance"
                   el="h1"
                   stagger={0.02}
                 />
                 <ScrollRevealSection delay={0.3}>
-                  <p className="text-lg text-slate-300 mb-6 text-balance">
-                    Explore todos os detalhes deste curso e matricule-se para começar sua jornada de aprendizado.
-                  </p>
+                  <p className="text-lg text-slate-300 mb-6 text-balance">{course.shortDescription}</p>
                   <div className="flex items-center gap-4 mb-8 text-sm">
                     {course.duration && (
                       <span className="flex items-center gap-1.5">
@@ -97,7 +95,7 @@ export default function CursoDetalhesPage() {
           </div>
         </section>
 
-        <div className="container px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="container py-12 md:py-16">
           <div className="grid lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-12">
               {course.modules && course.modules.length > 0 && (
@@ -204,7 +202,7 @@ export default function CursoDetalhesPage() {
         </div>
 
         <ScrollRevealSection className="py-12 bg-slate-100">
-          <div className="container px-4 sm:px-6 lg:px-8 text-center">
+          <div className="container text-center">
             <h2 className="text-2xl md:text-3xl font-semibold text-neutral-800 mb-4 text-balance">
               Não perca esta oportunidade!
             </h2>

@@ -18,7 +18,7 @@ export default function MeusCursosPage() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow py-12 md:py-16 bg-slate-50">
-        <div className="container px-4 sm:px-6 lg:px-8">
+        <div className="container">
           <div className="flex items-center gap-3 mb-8">
             <GraduationCap className="h-8 w-8 text-teal-600" />
             <h1 className="text-3xl md:text-4xl font-bold text-neutral-800">Meus Cursos</h1>
@@ -74,7 +74,9 @@ export default function MeusCursosPage() {
                       </Button>
                     ) : (
                       <Button asChild className="w-full bg-teal-600 hover:bg-teal-700">
-                        <Link href={`/curso/${course.courseId}`}>
+                        <Link href={`/curso-exemplo?id=${course.courseId}`}>
+                          {" "}
+                          {/* Adjust link as needed */}
                           <PlayCircle className="mr-2 h-4 w-4" /> Acessar Curso
                         </Link>
                       </Button>

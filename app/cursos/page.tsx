@@ -33,7 +33,7 @@ export default function CursosPage() {
       <main className="flex-grow">
         {/* Header Section */}
         <section className="bg-slate-100 py-12 md:py-16">
-          <div className="container text-center px-4 sm:px-6 lg:px-8">
+          <div className="container text-center">
             <AnimatedHeading
               text="Nossos Cursos"
               className="text-4xl md:text-5xl font-bold text-teal-700 mb-4"
@@ -49,7 +49,7 @@ export default function CursosPage() {
 
         {/* Filters and Courses Grid Section */}
         <ScrollRevealSection className="py-12 md:py-16">
-          <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="container">
             <div className="mb-10 flex flex-col md:flex-row justify-between items-center gap-6 p-4 bg-white rounded-xl shadow">
               <div className="relative w-full md:flex-grow">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -100,7 +100,7 @@ export default function CursosPage() {
 
         {/* Trust Badge/Stats Section */}
         <ScrollRevealSection className="bg-teal-700 text-white py-16 md:py-20">
-          <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="container">
             <div className="text-center mb-12">
               <Award className="h-12 w-12 text-amber-400 mx-auto mb-3" />
               <h2 className="text-3xl font-bold">Qualidade Comprovada e Reconhecida</h2>

@@ -1,6 +1,3 @@
-// Componente Footer: Representa o rodapé do site.
-// Contém links de navegação, informações de contato, links para redes sociais
-// e informações de direitos autorais.
 import Link from "next/link"
 import { AnchorIcon, Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react"
 
@@ -9,7 +6,7 @@ export default function Footer() {
 
   return (
     <footer id="contato" className="bg-slate-800 text-slate-300 py-12 md:py-16">
-      <div className="container px-4 sm:px-6 lg:px-8">
+      <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
           <div>
             <Link href="/" className="flex items-center gap-2 mb-4">

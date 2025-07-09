@@ -50,27 +50,27 @@ export default function CourseCard({ course, onAddToCart }: CourseCardProps) {
         </CardDescription>
       </CardContent>
       <CardFooter className="p-5 flex flex-col gap-3 bg-slate-50">
-        <div className="w-full text-center">
+        <div className="w-full">
           {hasDiscount ? (
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-xl font-bold text-red-600">{course.price}</span>
+            <div className="flex items-baseline gap-2 justify-center sm:justify-start mb-2">
+              <span className="text-lg font-bold text-red-600">{course.price}</span>
               <span className="text-sm text-muted-foreground line-through">
                 R$ {course.originalPriceValue?.toFixed(2).replace(".", ",")}
               </span>
             </div>
           ) : (
-            <p className="text-xl font-bold text-teal-600 mb-2">{course.price}</p>
+            <p className="text-lg font-bold text-teal-600 text-center sm:text-left mb-2">{course.price}</p>
           )}
         </div>
-        <div className="w-full flex gap-2">
+        <div className="w-full flex flex-col sm:flex-row gap-2">
           <Button
             asChild
             size="sm"
             variant="outline"
-            className="flex-1 border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700 bg-transparent"
+            className="flex-1 border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
           >
-            <Link href={`/curso-vitrine?id=${course.id}`}>
-              <Eye className="mr-1 h-4 w-4" /> Ver Mais
+            <Link href={`/curso-exemplo?id=${course.id}`}>
+              <Eye className="mr-2 h-4 w-4" /> Ver Mais
             </Link>
           </Button>
           <Button
@@ -78,7 +78,7 @@ export default function CourseCard({ course, onAddToCart }: CourseCardProps) {
             onClick={handleAddToCart}
             className="flex-1 bg-amber-500 hover:bg-amber-600 text-neutral-900"
           >
-            <ShoppingCartIcon className="mr-1 h-4 w-4" /> Adicionar
+            <ShoppingCartIcon className="mr-2 h-4 w-4" /> Adicionar
           </Button>
         </div>
       </CardFooter>

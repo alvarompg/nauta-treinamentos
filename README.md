@@ -1,26 +1,73 @@
 # Nauta Treinamentos
 
-Plataforma de cursos online focada no setor offshore, que oferece treinamentos do básico ao avançado.  
-Desenvolvida com React, Tailwind CSS e Supabase para banco de dados e autenticação. Deploy feito pela Vercel.
+Sistema moderno de treinamentos offshore desenvolvido com Next.js 14, TypeScript e Tailwind CSS.
 
----
+## 🚀 Tecnologias Utilizadas
 
-## Tecnologias utilizadas
+- **Next.js 14** - Framework React com App Router
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Framework CSS utilitário
+- **Framer Motion** - Animações fluidas
+- **Radix UI** - Componentes acessíveis
+- **Lucide React** - Ícones modernos
+- **Canvas Confetti** - Efeitos visuais
 
-- **React** - Biblioteca JavaScript para construção da interface  
-- **Tailwind CSS** - Framework CSS utilitário para estilização moderna  
-- **Supabase** - Backend como serviço (banco de dados PostgreSQL e autenticação)  
-- **Vercel** - Plataforma para deploy contínuo e hospedagem
+## 📦 Instalação
 
----
+\`\`\`bash
+# Clone o repositório
+git clone [seu-repositorio]
 
-## Funcionalidades principais
+# Instale as dependências
+npm install
 
-- Página inicial com cursos em destaque e animações modernas  
-- Sistema completo de cadastro e login com CPF  
-- Catálogo de cursos com filtro, busca e opção de adicionar ao carrinho  
-- Carrinho de compras dinâmico com contagem de itens e animações  
-- Área do usuário com menu flutuante: meus cursos, certificados, configurações e logout  
-- Página sobre com informações e animações modernas  
-- Integração com banco Supabase para dados e autenticação  
-- Deploy contínuo e automático via integração com GitHub e Vercel
+# Execute o projeto em desenvolvimento
+npm run dev
+\`\`\`
+
+## 🏗️ Estrutura do Projeto
+
+\`\`\`
+├── app/                    # App Router do Next.js
+│   ├── globals.css        # Estilos globais
+│   ├── layout.tsx         # Layout principal
+│   ├── page.tsx           # Página inicial
+│   ├── login/             # Página de login
+│   ├── cadastro/          # Página de cadastro
+│   ├── cursos/            # Listagem de cursos
+│   ├── curso-exemplo/     # Detalhes do curso
+│   ├── carrinho/          # Carrinho de compras
+│   ├── meus-cursos/       # Cursos do usuário
+│   ├── meus-certificados/ # Certificados
+│   ├── minha-conta/       # Configurações da conta
+│   └── sobre/             # Página sobre
+├── components/            # Componentes reutilizáveis
+│   ├── layout/           # Componentes de layout
+│   └── ui/               # Componentes de interface
+├── lib/                  # Utilitários e dados
+└── public/               # Arquivos estáticos
+\`\`\`
+
+## 🎨 Funcionalidades
+
+- ✅ Design responsivo e moderno
+- ✅ Animações suaves com Framer Motion
+- ✅ Sistema de autenticação simulado
+- ✅ Carrinho de compras funcional
+- ✅ Área do aluno com progresso
+- ✅ Certificados digitais
+- ✅ Busca e filtros de cursos
+- ✅ Depoimentos e avaliações
+- ✅ SEO otimizado
+
+## 🚀 Deploy
+
+O projeto está configurado para deploy na Vercel:
+
+\`\`\`bash
+npm run build
+\`\`\`
+
+## 📄 Licença
+
+Este projeto é propriedade da Nauta Treinamentos.

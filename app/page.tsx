@@ -30,7 +30,7 @@ export default function HomePage() {
             className="absolute inset-0 opacity-30 z-0"
             priority
           />
-          <div className="container relative z-10 text-center px-4 sm:px-6 lg:px-8">
+          <div className="container relative z-10 text-center">
             <AnimatedHeading
               text="Aprenda Offshore do Básico ao Avançado"
               className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 text-balance"
@@ -55,7 +55,7 @@ export default function HomePage() {
 
         {/* Sobre a Nauta Section */}
         <ScrollRevealSection className="py-16 md:py-24 bg-white">
-          <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="container">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">Sobre Nós</span>
@@ -94,7 +94,7 @@ export default function HomePage() {
 
         {/* Benefícios Section */}
         <ScrollRevealSection className="py-16 md:py-24 bg-slate-50">
-          <div className="container text-center px-4 sm:px-6 lg:px-8">
+          <div className="container text-center">
             <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">Vantagens</span>
             <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 mt-2 mb-12 text-balance">
               Por que Escolher a Nauta Treinamentos?
@@ -115,7 +115,7 @@ export default function HomePage() {
 
         {/* Depoimentos Section */}
         <ScrollRevealSection id="depoimentos" className="py-16 md:py-24 bg-white">
-          <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="container">
             <div className="text-center mb-12">
               <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">
                 O Que Dizem Nossos Alunos
@@ -140,7 +140,7 @@ export default function HomePage() {
 
         {/* Vitrine de Cursos Section */}
         <ScrollRevealSection className="py-16 md:py-24 bg-slate-100">
-          <div className="container px-4 sm:px-6 lg:px-8">
+          <div className="container">
             <div className="text-center mb-12">
               <ShoppingBag className="h-10 w-10 text-teal-600 mx-auto mb-2" />
               <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 text-balance">Cursos em Destaque</h2>
@@ -167,7 +167,7 @@ export default function HomePage() {
 
         {/* CTA Final Section */}
         <ScrollRevealSection className="py-16 md:py-24 bg-teal-700 text-white">
-          <div className="container text-center px-4 sm:px-6 lg:px-8">
+          <div className="container text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">
               Pronto para Elevar sua Carreira Offshore?
             </h2>

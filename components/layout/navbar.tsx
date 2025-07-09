@@ -1,7 +1,3 @@
-// Componente Navbar: Responsável pela navegação principal do site.
-// Inclui links para as páginas, carrinho de compras e menu de usuário/login.
-// Utiliza o componente Sheet do shadcn/ui para o menu mobile.
-// Simula o estado de login e exibe informações do usuário e carrinho.
 "use client"
 
 import { useState, useEffect } from "react"
@@ -43,32 +39,25 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0)
   const [userCourses, setUserCourses] = useState<UserCourse[]>([])
 
-  // useEffect: Hook do React que executa efeitos colaterais.
-  // Aqui, ele é usado para simular a busca de dados do usuário e do carrinho
-  // quando o estado de `isLoggedIn` muda.
+  // Simulate fetching user data and cart on login
   useEffect(() => {
-    // Se o usuário estiver logado (isLoggedIn === true)
     if (isLoggedIn) {
-      setCurrentUser(mockUser) // Define o usuário atual com dados mockados
-      setCartCount(mockCartItems.length) // Define a contagem de itens no carrinho
-      setUserCourses(mockUserCourses.slice(0, 3)) // Define os 3 primeiros cursos do usuário para o dropdown
+      setCurrentUser(mockUser)
+      setCartCount(mockCartItems.length)
+      setUserCourses(mockUserCourses.slice(0, 3)) // Show first 3 courses in dropdown
     } else {
-      // Se o usuário não estiver logado
-      setCurrentUser(null) // Limpa os dados do usuário atual
-      setCartCount(0) // Reseta a contagem do carrinho
-      setUserCourses([]) // Limpa a lista de cursos do usuário
+      setCurrentUser(null)
+      setCartCount(0) // Reset cart count or fetch guest cart
+      setUserCourses([])
     }
-  }, [isLoggedIn]) // Este efeito será re-executado sempre que `isLoggedIn` mudar
+  }, [isLoggedIn])
 
-  // handleLogin: Função para simular o login do usuário.
-  // Em uma aplicação real, aqui ocorreria a chamada para uma API de autenticação.
   const handleLogin = () => setIsLoggedIn(true) // Placeholder for actual login
-  // handleLogout: Função para simular o logout do usuário.
   const handleLogout = () => setIsLoggedIn(false)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <AnchorIcon className="h-7 w-7 text-teal-600" />
           <span className="text-xl font-bold text-teal-700">
@@ -133,7 +122,10 @@ export default function Navbar() {
                       {userCourses.length > 0 ? (
                         userCourses.map((course) => (
                           <DropdownMenuItem key={course.id} asChild>
-                            <Link href={`/curso/${course.courseId}`} className="flex flex-col items-start w-full">
+                            <Link
+                              href={`/curso-exemplo?id=${course.courseId}`}
+                              className="flex flex-col items-start w-full"
+                            >
                               <span className="text-sm font-medium">{course.name}</span>
                               <div className="w-full flex items-center gap-2 mt-1">
                                 <Progress value={course.progress} className="h-1.5 flex-grow" />
@@ -186,9 +178,8 @@ export default function Navbar() {
               <Button size="sm" asChild className="bg-amber-500 hover:bg-amber-600 text-neutral-900">
                 <Link href="/cadastro">Cadastro</Link>
               </Button>
-              <Button size="sm" onClick={handleLogin} variant="link" className="text-xs text-muted-foreground">
-                (Simular Login Desktop)
-              </Button>
+              {/* Button to simulate login for testing */}
+              {/* <Button size="sm" onClick={handleLogin} variant="secondary">Simular Login</Button> */}
             </>
           )}
         </nav>
@@ -270,7 +261,7 @@ export default function Navbar() {
                 ) : (
                   <>
                     <SheetClose asChild>
-                      <Button asChild className="w-full bg-transparent" variant="outline">
+                      <Button asChild className="w-full" variant="outline">
                         <Link href="/login">Login</Link>
                       </Button>
                     </SheetClose>

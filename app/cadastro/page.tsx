@@ -25,7 +25,7 @@ export default function CadastroPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-grow flex items-center justify-center py-12 bg-slate-50 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow flex items-center justify-center py-12 bg-slate-50">
         <Card className="w-full max-w-lg shadow-xl">
           <CardHeader className="text-center">
             <AnchorIcon className="mx-auto h-12 w-12 text-teal-600 mb-2" />
