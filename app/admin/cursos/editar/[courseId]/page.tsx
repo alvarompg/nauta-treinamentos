@@ -1,8 +1,3 @@
-// ============================================
-// PÁGINA DE EDIÇÃO/CRIAÇÃO DE CURSO
-// ============================================
-// Editor completo de cursos com menu lateral e formulários específicos
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -33,20 +28,19 @@ import {
   MessageSquare,
   Upload,
   Plus,
-  Edit,
   Trash2,
   GripVertical,
   Video,
   FileType,
   X,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { courses } from "@/lib/data"
 import { cn } from "@/lib/utils"
 
-// Tipos para o editor de curso
 interface CourseFormData {
-  // Informações Gerais
   title: string
   shortDescription: string
   bannerDescription: string
@@ -57,12 +51,8 @@ interface CourseFormData {
   videoUrl: string
   languages: string[]
   instructors: string[]
-
-  // Preço
   price: number
   promotionalPrice: number
-
-  // Módulos (estrutura complexa)
   sections: CourseSection[]
 }
 
@@ -108,7 +98,6 @@ export default function EditarCursoPage() {
   const courseId = params.courseId as string
   const isNewCourse = courseId === "novo"
 
-  // Estados
   const [activeSection, setActiveSection] = useState("geral")
   const [formData, setFormData] = useState<CourseFormData>({
     title: "",
@@ -128,14 +117,12 @@ export default function EditarCursoPage() {
   const [itemToDelete, setItemToDelete] = useState<{ sectionId: string; itemId?: string } | null>(null)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
 
-  // Proteção de rota
   useEffect(() => {
     if (!user || !isAdmin) {
       router.push("/")
     }
   }, [user, isAdmin, router])
 
-  // Carrega dados do curso se estiver editando
   useEffect(() => {
     if (!isNewCourse) {
       const course = courses.find((c) => c.id === courseId)
@@ -159,8 +146,7 @@ export default function EditarCursoPage() {
     }
   }, [courseId, isNewCourse])
 
-  // Funções de gerenciamento de formulário
-  const updateField = (field: keyof CourseFormData, value: any) => {
+  const updateField = (field: keyof CourseFormData, value: unknown) => {
     setFormData({ ...formData, [field]: value })
     setUnsavedChanges(true)
   }
@@ -191,7 +177,6 @@ export default function EditarCursoPage() {
     updateField("languages", newLanguages)
   }
 
-  // Funções de gerenciamento de seções
   const addSection = () => {
     const newSection: CourseSection = {
       id: `section-${Date.now()}`,
@@ -202,7 +187,7 @@ export default function EditarCursoPage() {
     updateField("sections", [...formData.sections, newSection])
   }
 
-  const updateSection = (sectionId: string, field: keyof CourseSection, value: any) => {
+  const updateSection = (sectionId: string, field: keyof CourseSection, value: unknown) => {
     const newSections = formData.sections.map((section) =>
       section.id === sectionId ? { ...section, [field]: value } : section,
     )
@@ -233,7 +218,6 @@ export default function EditarCursoPage() {
     }
   }
 
-  // Funções de gerenciamento de itens de seção
   const addItem = (sectionId: string, type: "lesson" | "assignment" | "final-test") => {
     const newItem: CourseSectionItem = {
       id: `item-${Date.now()}`,
@@ -247,7 +231,7 @@ export default function EditarCursoPage() {
     updateField("sections", newSections)
   }
 
-  const updateItem = (sectionId: string, itemId: string, field: keyof CourseSectionItem, value: any) => {
+  const updateItem = (sectionId: string, itemId: string, field: keyof CourseSectionItem, value: unknown) => {
     const newSections = formData.sections.map((section) =>
       section.id === sectionId
         ? {
@@ -267,7 +251,6 @@ export default function EditarCursoPage() {
     setItemToDelete(null)
   }
 
-  // Funções de ação
   const handleSave = () => {
     console.log("Salvando curso:", formData)
     setUnsavedChanges(false)
@@ -282,7 +265,6 @@ export default function EditarCursoPage() {
     return null
   }
 
-  // Items do menu lateral
   const menuItems = [
     { id: "geral", label: "Informações Gerais", icon: FileText },
     { id: "preco", label: "Preço e Promoção", icon: DollarSign },
@@ -293,7 +275,6 @@ export default function EditarCursoPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Header fixo */}
       <header className="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => router.push("/admin/cursos")}>
@@ -316,9 +297,7 @@ export default function EditarCursoPage() {
         </div>
       </header>
 
-      {/* Layout principal: Menu lateral + Conteúdo */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Menu lateral fixo */}
         <aside className="w-64 bg-white border-r overflow-y-auto">
           <nav className="p-4 space-y-1">
             {menuItems.map((item) => {
@@ -342,10 +321,8 @@ export default function EditarCursoPage() {
           </nav>
         </aside>
 
-        {/* Área de conteúdo scrollável */}
         <main className="flex-1 overflow-y-auto bg-slate-50 p-8">
           <div className="max-w-4xl mx-auto">
-            {/* SEÇÃO: Informações Gerais */}
             {activeSection === "geral" && (
               <Card>
                 <CardHeader>
@@ -353,7 +330,6 @@ export default function EditarCursoPage() {
                   <CardDescription>Configure os detalhes básicos do curso</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Título */}
                   <div className="space-y-2">
                     <Label htmlFor="title">
                       Título do curso <span className="text-red-500">*</span>
@@ -366,7 +342,6 @@ export default function EditarCursoPage() {
                     />
                   </div>
 
-                  {/* Descrição reduzida */}
                   <div className="space-y-2">
                     <Label htmlFor="shortDescription">
                       Descrição reduzida <span className="text-red-500">*</span>
@@ -382,7 +357,6 @@ export default function EditarCursoPage() {
                     <p className="text-xs text-muted-foreground">{formData.shortDescription.length}/160 caracteres</p>
                   </div>
 
-                  {/* Descrição para banner */}
                   <div className="space-y-2">
                     <Label htmlFor="bannerDescription">
                       Descrição para o banner <span className="text-red-500">*</span>
@@ -396,22 +370,18 @@ export default function EditarCursoPage() {
                     />
                   </div>
 
-                  {/* Descrição completa */}
                   <div className="space-y-2">
                     <Label htmlFor="fullDescription">Descrição completa (Editor Rico)</Label>
                     <Textarea
                       id="fullDescription"
-                      placeholder="Descrição detalhada do curso... (Em produção, seria um editor rico)"
+                      placeholder="Descrição detalhada do curso..."
                       rows={6}
                       value={formData.fullDescription}
                       onChange={(e) => updateField("fullDescription", e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
-                      💡 Em produção, este seria um editor de texto rico (TinyMCE, Quill, etc.)
-                    </p>
+                    <p className="text-xs text-muted-foreground">💡 Em produção, este seria um editor de texto rico</p>
                   </div>
 
-                  {/* Descrição popup */}
                   <div className="space-y-2">
                     <Label htmlFor="popupDescription">
                       Descrição para popup <span className="text-red-500">*</span>
@@ -425,7 +395,6 @@ export default function EditarCursoPage() {
                     />
                   </div>
 
-                  {/* Carga horária */}
                   <div className="space-y-2">
                     <Label htmlFor="duration">
                       Carga horária (em horas) <span className="text-red-500">*</span>
@@ -440,26 +409,21 @@ export default function EditarCursoPage() {
                     />
                   </div>
 
-                  {/* Upload de imagem */}
                   <div className="space-y-2">
-                    <Label htmlFor="imageUrl">
+                    <Label htmlFor="imageFile">
                       Imagem do curso <span className="text-red-500">*</span>
                     </Label>
-                    <div className="flex gap-3">
-                      <Input
-                        id="imageUrl"
-                        type="file"
-                        accept="image/*"
-                        className="flex-1"
-                        onChange={(e) => {
-                          // Simulação de upload
-                          const file = e.target.files?.[0]
-                          if (file) {
-                            updateField("imageUrl", URL.createObjectURL(file))
-                          }
-                        }}
-                      />
-                    </div>
+                    <Input
+                      id="imageFile"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          updateField("imageUrl", URL.createObjectURL(file))
+                        }
+                      }}
+                    />
                     {formData.imageUrl && (
                       <div className="mt-2 border rounded p-2">
                         <img
@@ -471,11 +435,10 @@ export default function EditarCursoPage() {
                     )}
                   </div>
 
-                  {/* Upload de vídeo */}
                   <div className="space-y-2">
-                    <Label htmlFor="videoUrl">Vídeo de apresentação (Opcional)</Label>
+                    <Label htmlFor="videoFile">Vídeo de apresentação (Opcional)</Label>
                     <Input
-                      id="videoUrl"
+                      id="videoFile"
                       type="file"
                       accept="video/*"
                       onChange={(e) => {
@@ -487,7 +450,6 @@ export default function EditarCursoPage() {
                     />
                   </div>
 
-                  {/* Linguagem */}
                   <div className="space-y-3">
                     <Label>
                       Linguagem <span className="text-red-500">*</span>
@@ -516,7 +478,6 @@ export default function EditarCursoPage() {
                     </div>
                   </div>
 
-                  {/* Instrutores */}
                   <div className="space-y-3">
                     <Label>
                       Instrutor(es) <span className="text-red-500">*</span>
@@ -556,7 +517,6 @@ export default function EditarCursoPage() {
               </Card>
             )}
 
-            {/* SEÇÃO: Preço e Promoção */}
             {activeSection === "preco" && (
               <Card>
                 <CardHeader>
@@ -613,7 +573,6 @@ export default function EditarCursoPage() {
               </Card>
             )}
 
-            {/* SEÇÃO: Módulos e Aulas */}
             {activeSection === "modulos" && (
               <div className="space-y-6">
                 <Card>
@@ -629,23 +588,16 @@ export default function EditarCursoPage() {
                   </CardContent>
                 </Card>
 
-                {/* Lista de seções */}
                 {formData.sections.map((section, sectionIndex) => (
                   <Card key={section.id} className="border-2">
                     <CardHeader className="bg-slate-50">
                       <div className="flex items-start gap-3">
-                        {/* Botão de arrastar */}
                         <div className="flex flex-col gap-1 pt-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 cursor-grab active:cursor-grabbing bg-transparent"
-                          >
+                          <Button variant="ghost" size="icon" className="h-8 w-8 cursor-grab bg-transparent">
                             <GripVertical className="h-4 w-4" />
                           </Button>
                         </div>
 
-                        {/* Conteúdo da seção */}
                         <div className="flex-1 space-y-3">
                           <Input
                             placeholder="Nome da Seção"
@@ -661,7 +613,6 @@ export default function EditarCursoPage() {
                           />
                         </div>
 
-                        {/* Botões de ação da seção */}
                         <div className="flex gap-1">
                           <Button
                             variant="ghost"
@@ -670,7 +621,7 @@ export default function EditarCursoPage() {
                             disabled={sectionIndex === 0}
                             className="bg-transparent"
                           >
-                            ↑
+                            <ChevronUp className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -679,7 +630,7 @@ export default function EditarCursoPage() {
                             disabled={sectionIndex === formData.sections.length - 1}
                             className="bg-transparent"
                           >
-                            ↓
+                            <ChevronDown className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -694,13 +645,12 @@ export default function EditarCursoPage() {
                     </CardHeader>
 
                     <CardContent className="pt-4 space-y-3">
-                      {/* Items da seção */}
-                      {section.items.map((item, itemIndex) => (
+                      {section.items.map((item) => (
                         <div key={item.id} className="flex items-start gap-3 p-3 border rounded bg-white">
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 cursor-grab active:cursor-grabbing flex-shrink-0 bg-transparent"
+                            className="h-8 w-8 cursor-grab flex-shrink-0 bg-transparent"
                           >
                             <GripVertical className="h-4 w-4" />
                           </Button>
@@ -728,7 +678,6 @@ export default function EditarCursoPage() {
                               rows={2}
                             />
 
-                            {/* Configuração específica por tipo de item */}
                             {item.type === "lesson" && (
                               <div className="border-t pt-3 mt-3">
                                 <p className="text-sm font-medium mb-2">Conteúdo da Aula:</p>
@@ -778,23 +727,17 @@ export default function EditarCursoPage() {
                             )}
                           </div>
 
-                          <div className="flex flex-col gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 bg-transparent">
-                              <Edit className="h-3 w-3" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setItemToDelete({ sectionId: section.id, itemId: item.id })}
-                              className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setItemToDelete({ sectionId: section.id, itemId: item.id })}
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
                         </div>
                       ))}
 
-                      {/* Botão para adicionar item */}
                       <div className="pt-2">
                         <div className="flex gap-2">
                           <Button
@@ -842,7 +785,6 @@ export default function EditarCursoPage() {
               </div>
             )}
 
-            {/* SEÇÃO: Mensagens do Curso */}
             {activeSection === "mensagens" && (
               <Card>
                 <CardHeader>
@@ -855,7 +797,6 @@ export default function EditarCursoPage() {
               </Card>
             )}
 
-            {/* SEÇÃO: Publicar Curso */}
             {activeSection === "publicar" && (
               <Card>
                 <CardHeader>
@@ -879,7 +820,6 @@ export default function EditarCursoPage() {
         </main>
       </div>
 
-      {/* Modal de confirmação de exclusão */}
       <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

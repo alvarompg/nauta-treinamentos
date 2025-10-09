@@ -1,9 +1,3 @@
-// ============================================
-// PÁGINA DE GERENCIAMENTO DE CURSOS (ADMIN)
-// ============================================
-// Lista todos os cursos com opções de editar e deletar
-// Inclui botão para criar novo curso
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -34,7 +28,6 @@ export default function GerenciarCursosPage() {
   const [cursosList, setCursosList] = useState<Course[]>(courses)
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null)
 
-  // Proteção: Apenas admins podem acessar
   useEffect(() => {
     if (!user) {
       router.push("/login")
@@ -43,18 +36,14 @@ export default function GerenciarCursosPage() {
     }
   }, [user, isAdmin, router])
 
-  // Função para abrir modal de confirmação de exclusão
   const handleDeleteClick = (course: Course) => {
     setCourseToDelete(course)
   }
 
-  // Função para confirmar exclusão
   const confirmDelete = () => {
     if (courseToDelete) {
-      // Remove curso da lista
       setCursosList(cursosList.filter((c) => c.id !== courseToDelete.id))
       setCourseToDelete(null)
-      // Em produção, aqui faria uma chamada à API
       console.log(`Curso ${courseToDelete.name} deletado`)
     }
   }
@@ -68,7 +57,6 @@ export default function GerenciarCursosPage() {
       <Navbar />
       <main className="flex-grow bg-slate-50 py-8 px-4">
         <div className="container max-w-7xl mx-auto">
-          {/* Cabeçalho com breadcrumb e botão de criar */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
             <div>
               <div className="text-sm text-muted-foreground mb-2">
@@ -88,7 +76,6 @@ export default function GerenciarCursosPage() {
             </Link>
           </div>
 
-          {/* Estatísticas rápidas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
@@ -110,7 +97,6 @@ export default function GerenciarCursosPage() {
             </Card>
           </div>
 
-          {/* Lista de cursos */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -125,7 +111,6 @@ export default function GerenciarCursosPage() {
                     key={course.id}
                     className="flex flex-col md:flex-row md:items-center gap-4 p-4 border rounded-lg hover:bg-slate-50 transition-colors"
                   >
-                    {/* Imagem do curso */}
                     <div className="w-full md:w-32 h-20 bg-slate-200 rounded overflow-hidden flex-shrink-0">
                       <Image
                         src={course.imageUrl || "/placeholder.svg"}
@@ -136,7 +121,6 @@ export default function GerenciarCursosPage() {
                       />
                     </div>
 
-                    {/* Informações do curso */}
                     <div className="flex-grow min-w-0">
                       <h3 className="font-semibold text-lg text-neutral-900 truncate">{course.name}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-2">{course.shortDescription}</p>
@@ -147,7 +131,6 @@ export default function GerenciarCursosPage() {
                       </div>
                     </div>
 
-                    {/* Botões de ação */}
                     <div className="flex gap-2 md:flex-col md:w-auto w-full">
                       <Link href={`/admin/cursos/editar/${course.id}`} className="flex-1 md:flex-none">
                         <Button variant="outline" size="sm" className="w-full bg-transparent">
@@ -182,13 +165,12 @@ export default function GerenciarCursosPage() {
       </main>
       <Footer />
 
-      {/* Modal de confirmação de exclusão */}
       <AlertDialog open={!!courseToDelete} onOpenChange={() => setCourseToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Você tem certeza que deseja deletar o curso <strong>"{courseToDelete?.name}"</strong>? Esta ação não pode
+              Você tem certeza que deseja deletar o curso <strong>{courseToDelete?.name}</strong>? Esta ação não pode
               ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

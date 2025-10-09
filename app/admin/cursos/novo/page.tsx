@@ -1,8 +1,3 @@
-// ============================================
-// PÁGINA DE CRIAÇÃO DE NOVO CURSO
-// ============================================
-// Redireciona para o editor de cursos sem ID
-
 "use client"
 
 import { useEffect } from "react"
@@ -12,7 +7,6 @@ export default function NovoCursoPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Redireciona para o editor com ID 'novo'
     router.push("/admin/cursos/editar/novo")
   }, [router])
 
