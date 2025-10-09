@@ -1,41 +1,60 @@
+// Página inicial (Homepage) da aplicação
+// Esta é a primeira página que os usuários veem ao acessar o site
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+
+// Importação dos componentes de layout
 import Navbar from "@/components/layout/navbar"
 import Footer from "@/components/layout/footer"
+
+// Importação dos componentes UI customizados
 import TestimonialItem from "@/components/ui/testimonial-item"
 import IconTitleDescriptionCard from "@/components/ui/icon-title-description-card"
-import CourseCard from "@/components/ui/course-card" // Import CourseCard
-import AnimatedHeading from "@/components/ui/animated-heading" // Import AnimatedHeading
-import ScrollRevealSection from "@/components/ui/scroll-reveal-section" // Import ScrollRevealSection
-import { homeBenefits, testimonials, courses } from "@/lib/data" // Import courses
+import CourseCard from "@/components/ui/course-card"
+import AnimatedHeading from "@/components/ui/animated-heading"
+import ScrollRevealSection from "@/components/ui/scroll-reveal-section"
+
+// Importação dos dados
+import { homeBenefits, testimonials, courses } from "@/lib/data"
 import { ChevronRight, ShoppingBag } from "lucide-react"
 
 export default function HomePage() {
-  const featuredCourses = courses.slice(0, 4) // Get first 4 courses for showcase
+  // Seleciona os primeiros 4 cursos para exibir na vitrine
+  const featuredCourses = courses.slice(0, 4)
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Barra de navegação */}
       <Navbar />
+
+      {/* Conteúdo principal da página */}
       <main className="flex-grow">
-        {/* Hero Section */}
+        {/* SEÇÃO HERO - Primeira seção que o usuário vê */}
         <section className="relative bg-slate-800 text-white py-20 md:py-32 lg:py-40 overflow-hidden">
+          {/* Imagem de fundo */}
           <Image
             src="/placeholder.svg?width=1920&height=1080&text=Treinamento+Offshore+Moderno"
             alt="Plataforma offshore ao amanhecer"
             layout="fill"
             objectFit="cover"
             className="absolute inset-0 opacity-30 z-0"
-            priority
+            priority // Carrega com prioridade por ser a primeira imagem
           />
-          <div className="container relative z-10 text-center">
+
+          {/* Conteúdo sobre a imagem */}
+          <div className="container relative z-10 text-center px-4 sm:px-6 lg:px-8">
+            {/* Título principal animado */}
             <AnimatedHeading
               text="Aprenda Offshore do Básico ao Avançado"
               className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 text-balance"
               el="h1"
             />
+
+            {/* Subtítulo e botão com animação de scroll */}
             <ScrollRevealSection delay={0.3}>
               <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 text-balance">
                 Capacite-se com os melhores treinamentos do mercado e impulsione sua carreira no setor offshore.
@@ -53,10 +72,12 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Sobre a Nauta Section */}
+        {/* SEÇÃO SOBRE A NAUTA */}
         <ScrollRevealSection className="py-16 md:py-24 bg-white">
-          <div className="container">
+          <div className="container px-4 sm:px-6 lg:px-8">
+            {/* Grid de 2 colunas: texto + imagem */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
+              {/* Coluna de texto */}
               <div>
                 <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">Sobre Nós</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 mt-2 mb-6 text-balance">
@@ -74,11 +95,13 @@ export default function HomePage() {
                 <Button
                   asChild
                   variant="outline"
-                  className="border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+                  className="border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700 bg-transparent"
                 >
                   <Link href="/sobre">Saiba Mais Sobre Nós</Link>
                 </Button>
               </div>
+
+              {/* Coluna da imagem */}
               <div>
                 <Image
                   src="/placeholder.svg?width=600&height=400&text=Equipe+Nauta+em+Ação"
@@ -92,13 +115,15 @@ export default function HomePage() {
           </div>
         </ScrollRevealSection>
 
-        {/* Benefícios Section */}
+        {/* SEÇÃO BENEFÍCIOS */}
         <ScrollRevealSection className="py-16 md:py-24 bg-slate-50">
-          <div className="container text-center">
+          <div className="container text-center px-4 sm:px-6 lg:px-8">
             <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">Vantagens</span>
             <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 mt-2 mb-12 text-balance">
               Por que Escolher a Nauta Treinamentos?
             </h2>
+
+            {/* Grid de benefícios */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {homeBenefits.map((benefit, index) => (
                 <ScrollRevealSection key={benefit.title} delay={index * 0.1} yOffset={30}>
@@ -113,9 +138,9 @@ export default function HomePage() {
           </div>
         </ScrollRevealSection>
 
-        {/* Depoimentos Section */}
+        {/* SEÇÃO DEPOIMENTOS */}
         <ScrollRevealSection id="depoimentos" className="py-16 md:py-24 bg-white">
-          <div className="container">
+          <div className="container px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">
                 O Que Dizem Nossos Alunos
@@ -124,6 +149,8 @@ export default function HomePage() {
                 Experiências que Transformam Carreiras
               </h2>
             </div>
+
+            {/* Carrossel de depoimentos */}
             <Carousel opts={{ align: "start", loop: true }} className="w-full">
               <CarouselContent>
                 {testimonials.map((testimonial) => (
@@ -132,15 +159,16 @@ export default function HomePage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
+              {/* Botões de navegação (só aparecem no desktop) */}
               <CarouselPrevious className="hidden sm:flex" />
               <CarouselNext className="hidden sm:flex" />
             </Carousel>
           </div>
         </ScrollRevealSection>
 
-        {/* Vitrine de Cursos Section */}
+        {/* SEÇÃO VITRINE DE CURSOS */}
         <ScrollRevealSection className="py-16 md:py-24 bg-slate-100">
-          <div className="container">
+          <div className="container px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <ShoppingBag className="h-10 w-10 text-teal-600 mx-auto mb-2" />
               <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 text-balance">Cursos em Destaque</h2>
@@ -148,6 +176,8 @@ export default function HomePage() {
                 Confira alguns dos nossos treinamentos mais procurados e comece a transformar sua carreira hoje mesmo.
               </p>
             </div>
+
+            {/* Grid de cursos em destaque */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredCourses.map((course, index) => (
                 <ScrollRevealSection key={course.id} delay={index * 0.1} yOffset={30} className="h-full">
@@ -155,6 +185,8 @@ export default function HomePage() {
                 </ScrollRevealSection>
               ))}
             </div>
+
+            {/* Botão para ver todos os cursos */}
             <div className="text-center mt-12">
               <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700">
                 <Link href="/cursos">
@@ -165,15 +197,17 @@ export default function HomePage() {
           </div>
         </ScrollRevealSection>
 
-        {/* CTA Final Section */}
+        {/* SEÇÃO CTA FINAL - Newsletter */}
         <ScrollRevealSection className="py-16 md:py-24 bg-teal-700 text-white">
-          <div className="container text-center">
+          <div className="container text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">
               Pronto para Elevar sua Carreira Offshore?
             </h2>
             <p className="text-lg text-teal-100 max-w-xl mx-auto mb-8">
               Inscreva-se em nossa newsletter para receber novidades sobre cursos, dicas e promoções exclusivas.
             </p>
+
+            {/* Formulário de newsletter */}
             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input
                 type="email"
@@ -188,6 +222,8 @@ export default function HomePage() {
           </div>
         </ScrollRevealSection>
       </main>
+
+      {/* Rodapé */}
       <Footer />
     </div>
   )
