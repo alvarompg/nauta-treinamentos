@@ -18,6 +18,8 @@ export interface Course {
   prerequisites?: string[]
   expectedResults?: string[]
   keywords?: string[]
+  courseSections?: CourseSection[]
+  finalQuizId?: string
 }
 
 export interface Module {
@@ -58,6 +60,9 @@ export interface UserCourse {
   progress: number
   imageUrl?: string
   certificateAvailable?: boolean
+  completedLessonIds?: string[]
+  quizAttempts?: any[] // QuizAttempt
+  isCompleted?: boolean
 }
 
 export interface UserCertificate {
@@ -87,6 +92,68 @@ export interface QualityStat {
   icon: string
   value: string
   label: string
+}
+
+export interface TimelineEvent {
+  id: string
+  year: string
+  title: string
+  description: string
+  icon: any // Lucide icon component
+}
+
+export interface TeamMember {
+  id: string
+  name: string
+  role: string
+  bio: string
+  avatarUrl?: string
+}
+
+export interface CompanyValue {
+  id: string
+  icon: string
+  title: string
+  description: string
+}
+
+export interface Quiz {
+  id: string
+  title: string
+  description?: string
+  passingScore: number
+  maxAttempts: number
+  questions: QuizQuestion[]
+}
+
+export interface QuizQuestion {
+  id: string
+  text: string
+  options: QuizOption[]
+  correctOptionId: string
+  explanation?: string
+}
+
+export interface QuizOption {
+  id: string
+  text: string
+}
+
+export interface Lesson {
+  id: string
+  title: string
+  type: "video" | "text" | "quiz"
+  duration?: string
+  videoUrl?: string
+  textContent?: string
+  quizId?: string
+  hasResources?: boolean
+}
+
+export interface CourseSection {
+  id: string
+  title: string
+  lessons: Lesson[]
 }
 
 // ============================================
@@ -516,3 +583,244 @@ O conteúdo pode ser formatado e organizado da melhor forma para atrair e inform
   prerequisites: ["Interesse na área", "Disponibilidade de tempo"],
   expectedResults: ["Certificado de conclusão", "Conhecimento aplicável", "Networking com outros profissionais"],
 }
+
+export const companyTimeline: TimelineEvent[] = [
+  {
+    id: "t1",
+    year: "2010",
+    title: "Fundação da Nauta",
+    description:
+      "Iniciamos nossas atividades com o objetivo de oferecer treinamentos de excelência para o setor offshore brasileiro.",
+    icon: require("lucide-react").Anchor,
+  },
+  {
+    id: "t2",
+    year: "2013",
+    title: "Certificação Internacional",
+    description:
+      "Conquistamos certificações internacionais que validam a qualidade dos nossos treinamentos e instrutores.",
+    icon: require("lucide-react").Award,
+  },
+  {
+    id: "t3",
+    year: "2016",
+    title: "Expansão Nacional",
+    description: "Abrimos novas unidades em diferentes estados, ampliando nosso alcance e capacidade de atendimento.",
+    icon: require("lucide-react").MapPin,
+  },
+  {
+    id: "t4",
+    year: "2019",
+    title: "10.000 Alunos Formados",
+    description:
+      "Atingimos a marca de 10 mil profissionais capacitados, consolidando nossa posição como referência no mercado.",
+    icon: require("lucide-react").Users,
+  },
+  {
+    id: "t5",
+    year: "2022",
+    title: "Plataforma Digital",
+    description:
+      "Lançamos nossa plataforma de ensino online, oferecendo flexibilidade e acesso remoto aos nossos cursos.",
+    icon: require("lucide-react").Monitor,
+  },
+]
+
+export const teamMembers: TeamMember[] = [
+  {
+    id: "tm1",
+    name: "Capitão Roberto Alves",
+    role: "Diretor Técnico",
+    bio: "30 anos de experiência em operações offshore, ex-comandante de plataformas e especialista em segurança marítima.",
+    avatarUrl: "/placeholder.svg?height=100&width=100&text=RA",
+  },
+  {
+    id: "tm2",
+    name: "Dra. Marina Santos",
+    role: "Coordenadora Pedagógica",
+    bio: "Doutora em Educação com especialização em treinamentos técnicos e desenvolvimento de metodologias de ensino.",
+    avatarUrl: "/placeholder.svg?height=100&width=100&text=MS",
+  },
+  {
+    id: "tm3",
+    name: "Eng. Carlos Mendes",
+    role: "Instrutor Sênior",
+    bio: "Engenheiro mecânico com 20 anos de atuação em plataformas offshore e certificações internacionais em soldagem.",
+    avatarUrl: "/placeholder.svg?height=100&width=100&text=CM",
+  },
+  {
+    id: "tm4",
+    name: "Juliana Costa",
+    role: "Gerente de Qualidade",
+    bio: "Especialista em gestão da qualidade e compliance, responsável por manter nossos padrões de excelência.",
+    avatarUrl: "/placeholder.svg?height=100&width=100&text=JC",
+  },
+  {
+    id: "tm5",
+    name: "Pedro Oliveira",
+    role: "Coordenador de Segurança",
+    bio: "Técnico de segurança do trabalho com vasta experiência em NR-37 e treinamentos de emergência offshore.",
+    avatarUrl: "/placeholder.svg?height=100&width=100&text=PO",
+  },
+  {
+    id: "tm6",
+    name: "Ana Ferreira",
+    role: "Instrutora de Primeiros Socorros",
+    bio: "Enfermeira e paramédica com certificações internacionais em atendimento de emergência e resgate.",
+    avatarUrl: "/placeholder.svg?height=100&width=100&text=AF",
+  },
+]
+
+export const companyValues: CompanyValue[] = [
+  {
+    id: "v1",
+    icon: "Shield",
+    title: "Segurança em Primeiro Lugar",
+    description:
+      "A segurança dos nossos alunos e profissionais é nossa prioridade máxima em todos os treinamentos e operações.",
+  },
+  {
+    id: "v2",
+    icon: "Target",
+    title: "Excelência e Qualidade",
+    description:
+      "Buscamos constantemente a excelência em nossos serviços, mantendo os mais altos padrões de qualidade.",
+  },
+  {
+    id: "v3",
+    icon: "Heart",
+    title: "Compromisso com o Aluno",
+    description:
+      "Estamos comprometidos com o sucesso profissional de cada aluno, oferecendo suporte completo em sua jornada.",
+  },
+  {
+    id: "v4",
+    icon: "Lightbulb",
+    title: "Inovação Contínua",
+    description:
+      "Investimos em tecnologia e metodologias inovadoras para proporcionar a melhor experiência de aprendizado.",
+  },
+]
+
+export const mockQuizzes: Quiz[] = [
+  {
+    id: "quiz1",
+    title: "Quiz: Fundamentos de Segurança Offshore",
+    description: "Teste seus conhecimentos sobre os conceitos básicos de segurança em plataformas offshore.",
+    passingScore: 70,
+    maxAttempts: 3,
+    questions: [
+      {
+        id: "q1",
+        text: "Qual é a principal norma regulamentadora que trata de segurança em plataformas offshore no Brasil?",
+        options: [
+          { id: "q1a", text: "NR-35" },
+          { id: "q1b", text: "NR-37" },
+          { id: "q1c", text: "NR-33" },
+          { id: "q1d", text: "NR-10" },
+        ],
+        correctOptionId: "q1b",
+        explanation: "A NR-37 é a norma regulamentadora específica para segurança e saúde em plataformas de petróleo.",
+      },
+      {
+        id: "q2",
+        text: "Qual equipamento de proteção individual (EPI) é obrigatório para todos os trabalhadores em plataformas offshore?",
+        options: [
+          { id: "q2a", text: "Capacete e óculos de proteção" },
+          { id: "q2b", text: "Colete salva-vidas e capacete" },
+          { id: "q2c", text: "Luvas e botas de segurança" },
+          { id: "q2d", text: "Todos os anteriores" },
+        ],
+        correctOptionId: "q2d",
+        explanation:
+          "Todos os EPIs mencionados são obrigatórios em diferentes situações em plataformas offshore para garantir a segurança dos trabalhadores.",
+      },
+      {
+        id: "q3",
+        text: "Em caso de abandono de plataforma, qual é o procedimento correto?",
+        options: [
+          { id: "q3a", text: "Pular imediatamente no mar" },
+          { id: "q3b", text: "Aguardar instruções e seguir para o ponto de reunião" },
+          { id: "q3c", text: "Tentar apagar o incêndio sozinho" },
+          { id: "q3d", text: "Ligar para familiares primeiro" },
+        ],
+        correctOptionId: "q3b",
+        explanation:
+          "O procedimento correto é aguardar as instruções da equipe de segurança e seguir de forma ordenada para o ponto de reunião designado.",
+      },
+    ],
+  },
+  {
+    id: "quiz2",
+    title: "Quiz: Trabalho em Altura - NR-35",
+    description: "Avalie seus conhecimentos sobre segurança em trabalhos em altura.",
+    passingScore: 75,
+    maxAttempts: 3,
+    questions: [
+      {
+        id: "q4",
+        text: "A partir de qual altura é considerado trabalho em altura segundo a NR-35?",
+        options: [
+          { id: "q4a", text: "1 metro" },
+          { id: "q4b", text: "2 metros" },
+          { id: "q4c", text: "3 metros" },
+          { id: "q4d", text: "5 metros" },
+        ],
+        correctOptionId: "q4b",
+        explanation:
+          "Segundo a NR-35, trabalho em altura é toda atividade executada acima de 2 metros do nível inferior onde haja risco de queda.",
+      },
+      {
+        id: "q5",
+        text: "Qual é o principal sistema de proteção contra quedas?",
+        options: [
+          { id: "q5a", text: "Cinto de segurança tipo paraquedista" },
+          { id: "q5b", text: "Capacete" },
+          { id: "q5c", text: "Luvas antiderrapantes" },
+          { id: "q5d", text: "Botas com solado aderente" },
+        ],
+        correctOptionId: "q5a",
+        explanation:
+          "O cinto de segurança tipo paraquedista, quando conectado a um ponto de ancoragem adequado, é o principal sistema de proteção contra quedas.",
+      },
+    ],
+  },
+  {
+    id: "quiz3",
+    title: "Quiz: Espaços Confinados - NR-33",
+    description: "Teste seus conhecimentos sobre trabalho seguro em espaços confinados.",
+    passingScore: 70,
+    maxAttempts: 3,
+    questions: [
+      {
+        id: "q6",
+        text: "O que caracteriza um espaço confinado?",
+        options: [
+          { id: "q6a", text: "Qualquer ambiente fechado" },
+          {
+            id: "q6b",
+            text: "Área não projetada para ocupação contínua, com meios limitados de entrada e saída",
+          },
+          { id: "q6c", text: "Apenas tanques e silos" },
+          { id: "q6d", text: "Ambientes sem iluminação" },
+        ],
+        correctOptionId: "q6b",
+        explanation:
+          "Espaço confinado é qualquer área não projetada para ocupação humana contínua, com meios limitados de entrada e saída e ventilação insuficiente.",
+      },
+      {
+        id: "q7",
+        text: "Qual é a função do vigia em trabalhos em espaços confinados?",
+        options: [
+          { id: "q7a", text: "Entrar no espaço confinado para ajudar" },
+          { id: "q7b", text: "Monitorar os trabalhadores e acionar emergência se necessário" },
+          { id: "q7c", text: "Operar equipamentos dentro do espaço" },
+          { id: "q7d", text: "Fazer a limpeza do local" },
+        ],
+        correctOptionId: "q7b",
+        explanation:
+          "O vigia deve permanecer do lado de fora, monitorando constantemente os trabalhadores e acionando os procedimentos de emergência se necessário.",
+      },
+    ],
+  },
+]
