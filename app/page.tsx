@@ -1,60 +1,67 @@
-// Página inicial (Homepage) da aplicação
-// Esta é a primeira página que os usuários veem ao acessar o site
-
 import Image from "next/image"
 import Link from "next/link"
+import { Award, Users, Clock, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
-
-// Importação dos componentes de layout
 import Navbar from "@/components/layout/navbar"
 import Footer from "@/components/layout/footer"
-
-// Importação dos componentes UI customizados
 import TestimonialItem from "@/components/ui/testimonial-item"
-import IconTitleDescriptionCard from "@/components/ui/icon-title-description-card"
 import CourseCard from "@/components/ui/course-card"
 import AnimatedHeading from "@/components/ui/animated-heading"
 import ScrollRevealSection from "@/components/ui/scroll-reveal-section"
-
-// Importação dos dados
-import { homeBenefits, testimonials, courses } from "@/lib/data"
+import { Card, CardContent } from "@/components/ui/card"
+import { testimonials, courses } from "@/lib/data"
 import { ChevronRight, ShoppingBag } from "lucide-react"
 
+const homeBenefitsLocal = [
+  {
+    IconComponent: Award,
+    title: "Certificação Reconhecida",
+    description: "Certificados válidos em todo território nacional e aceitos pelas principais empresas do setor.",
+  },
+  {
+    IconComponent: Users,
+    title: "Instrutores Experientes",
+    description:
+      "Equipe com vasta experiência offshore, trazendo casos reais e conhecimento prático para a sala de aula.",
+  },
+  {
+    IconComponent: Clock,
+    title: "Horários Flexíveis",
+    description: "Turmas em diversos horários para se adequar à sua rotina, incluindo opções de finais de semana.",
+  },
+  {
+    IconComponent: Shield,
+    title: "Segurança e Qualidade",
+    description: "Instalações modernas e seguras, com equipamentos de última geração para treinamentos práticos.",
+  },
+]
+
 export default function HomePage() {
-  // Seleciona os primeiros 4 cursos para exibir na vitrine
   const featuredCourses = courses.slice(0, 4)
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Barra de navegação */}
       <Navbar />
 
-      {/* Conteúdo principal da página */}
       <main className="flex-grow">
-        {/* SEÇÃO HERO - Primeira seção que o usuário vê */}
         <section className="relative bg-slate-800 text-white py-20 md:py-32 lg:py-40 overflow-hidden">
-          {/* Imagem de fundo */}
           <Image
             src="/placeholder.svg?width=1920&height=1080&text=Treinamento+Offshore+Moderno"
             alt="Plataforma offshore ao amanhecer"
-            layout="fill"
-            objectFit="cover"
-            className="absolute inset-0 opacity-30 z-0"
-            priority // Carrega com prioridade por ser a primeira imagem
+            fill
+            className="absolute inset-0 opacity-30 z-0 object-cover"
+            priority
           />
 
-          {/* Conteúdo sobre a imagem */}
           <div className="container relative z-10 text-center px-4 sm:px-6 lg:px-8">
-            {/* Título principal animado */}
             <AnimatedHeading
               text="Aprenda Offshore do Básico ao Avançado"
               className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 text-balance"
               el="h1"
             />
 
-            {/* Subtítulo e botão com animação de scroll */}
             <ScrollRevealSection delay={0.3}>
               <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-10 text-balance">
                 Capacite-se com os melhores treinamentos do mercado e impulsione sua carreira no setor offshore.
@@ -72,12 +79,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* SEÇÃO SOBRE A NAUTA */}
         <ScrollRevealSection className="py-16 md:py-24 bg-white">
           <div className="container px-4 sm:px-6 lg:px-8">
-            {/* Grid de 2 colunas: texto + imagem */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              {/* Coluna de texto */}
               <div>
                 <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">Sobre Nós</span>
                 <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 mt-2 mb-6 text-balance">
@@ -101,7 +105,6 @@ export default function HomePage() {
                 </Button>
               </div>
 
-              {/* Coluna da imagem */}
               <div>
                 <Image
                   src="/placeholder.svg?width=600&height=400&text=Equipe+Nauta+em+Ação"
@@ -115,7 +118,6 @@ export default function HomePage() {
           </div>
         </ScrollRevealSection>
 
-        {/* SEÇÃO BENEFÍCIOS */}
         <ScrollRevealSection className="py-16 md:py-24 bg-slate-50">
           <div className="container text-center px-4 sm:px-6 lg:px-8">
             <span className="text-sm font-semibold text-teal-600 uppercase tracking-wider">Vantagens</span>
@@ -123,22 +125,24 @@ export default function HomePage() {
               Por que Escolher a Nauta Treinamentos?
             </h2>
 
-            {/* Grid de benefícios */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {homeBenefits.map((benefit, index) => (
+              {homeBenefitsLocal.map((benefit, index) => (
                 <ScrollRevealSection key={benefit.title} delay={index * 0.1} yOffset={30}>
-                  <IconTitleDescriptionCard
-                    icon={benefit.icon}
-                    title={benefit.title}
-                    description={benefit.description}
-                  />
+                  <Card className="border-none shadow-md hover:shadow-lg transition-shadow h-full">
+                    <CardContent className="flex flex-col items-center text-center p-6 h-full">
+                      <div className="mb-4 p-3 bg-teal-100 rounded-full">
+                        <benefit.IconComponent className="h-8 w-8 text-teal-600" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-neutral-800 mb-2">{benefit.title}</h3>
+                      <p className="text-sm text-neutral-600 leading-relaxed">{benefit.description}</p>
+                    </CardContent>
+                  </Card>
                 </ScrollRevealSection>
               ))}
             </div>
           </div>
         </ScrollRevealSection>
 
-        {/* SEÇÃO DEPOIMENTOS */}
         <ScrollRevealSection id="depoimentos" className="py-16 md:py-24 bg-white">
           <div className="container px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -150,7 +154,6 @@ export default function HomePage() {
               </h2>
             </div>
 
-            {/* Carrossel de depoimentos */}
             <Carousel opts={{ align: "start", loop: true }} className="w-full">
               <CarouselContent>
                 {testimonials.map((testimonial) => (
@@ -159,14 +162,12 @@ export default function HomePage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              {/* Botões de navegação (só aparecem no desktop) */}
               <CarouselPrevious className="hidden sm:flex" />
               <CarouselNext className="hidden sm:flex" />
             </Carousel>
           </div>
         </ScrollRevealSection>
 
-        {/* SEÇÃO VITRINE DE CURSOS */}
         <ScrollRevealSection className="py-16 md:py-24 bg-slate-100">
           <div className="container px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -177,7 +178,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            {/* Grid de cursos em destaque */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredCourses.map((course, index) => (
                 <ScrollRevealSection key={course.id} delay={index * 0.1} yOffset={30} className="h-full">
@@ -186,7 +186,6 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* Botão para ver todos os cursos */}
             <div className="text-center mt-12">
               <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700">
                 <Link href="/cursos">
@@ -197,7 +196,6 @@ export default function HomePage() {
           </div>
         </ScrollRevealSection>
 
-        {/* SEÇÃO CTA FINAL - Newsletter */}
         <ScrollRevealSection className="py-16 md:py-24 bg-teal-700 text-white">
           <div className="container text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-balance">
@@ -207,7 +205,6 @@ export default function HomePage() {
               Inscreva-se em nossa newsletter para receber novidades sobre cursos, dicas e promoções exclusivas.
             </p>
 
-            {/* Formulário de newsletter */}
             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <Input
                 type="email"
@@ -223,7 +220,6 @@ export default function HomePage() {
         </ScrollRevealSection>
       </main>
 
-      {/* Rodapé */}
       <Footer />
     </div>
   )

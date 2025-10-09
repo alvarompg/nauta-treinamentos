@@ -1,50 +1,31 @@
-// Componente IconTitleDescriptionCard: Card com ícone, título e descrição
-// Usado para exibir benefícios, valores da empresa e outras informações destacadas
+import { Award, Users, Clock, Shield } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { LucideIcon } from "lucide-react"
-
-// Interface para as props do componente
 interface IconTitleDescriptionCardProps {
-  icon: LucideIcon // Componente de ícone do Lucide React
-  title: string // Título do card
-  description: string // Descrição/texto do card
-  iconColor?: string // Cor do ícone (opcional, padrão: teal)
+  icon: string
+  title: string
+  description: string
 }
 
-export default function IconTitleDescriptionCard({
-  icon: Icon, // Renomeia 'icon' para 'Icon' (convenção React para componentes)
-  title,
-  description,
-  iconColor = "text-teal-600", // Cor padrão do ícone
-}: IconTitleDescriptionCardProps) {
+const iconMap = {
+  Award: Award,
+  Users: Users,
+  Clock: Clock,
+  Shield: Shield,
+}
+
+export default function IconTitleDescriptionCard({ icon, title, description }: IconTitleDescriptionCardProps) {
+  const IconComponent = iconMap[icon as keyof typeof iconMap] || Award
+
   return (
-    // Card principal com efeitos de hover
-    <Card className="shadow-md hover:shadow-lg transition-shadow rounded-xl h-full">
-      {/* Header: Ícone e título */}
-      <CardHeader className="flex flex-row items-center gap-4 pb-2">
-        {/* Container do ícone com fundo colorido */}
-        <div className={`bg-teal-100 p-3 rounded-full`}>
-          <Icon className={`h-6 w-6 ${iconColor}`} />
+    <Card className="border-none shadow-md hover:shadow-lg transition-shadow h-full">
+      <CardContent className="flex flex-col items-center text-center p-6 h-full">
+        <div className="mb-4 p-3 bg-teal-100 rounded-full">
+          <IconComponent className="h-8 w-8 text-teal-600" />
         </div>
-
-        {/* Título */}
-        <CardTitle className="text-lg font-semibold text-neutral-800">{title}</CardTitle>
-      </CardHeader>
-
-      {/* Conteúdo: Descrição */}
-      <CardContent>
-        <p className="text-sm text-neutral-600">{description}</p>
+        <h3 className="text-lg font-semibold text-neutral-800 mb-2">{title}</h3>
+        <p className="text-sm text-neutral-600 leading-relaxed">{description}</p>
       </CardContent>
     </Card>
   )
-}
-
-// Props padrão para o componente (fallback)
-import { ShieldCheck } from "lucide-react" // Ícone de exemplo
-IconTitleDescriptionCard.defaultProps = {
-  icon: ShieldCheck,
-  title: "Título Padrão",
-  description: "Descrição padrão para o card, ilustrando seu uso.",
-  iconColor: "text-teal-600",
 }
