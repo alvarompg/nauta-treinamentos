@@ -49,8 +49,8 @@ import {
   BookOpen,
 } from "lucide-react"
 
-// Importação da função de confete
-import { triggerConfetti } from "@/lib/utils"
+// Importação da função de confete - DESATIVADA conforme solicitação
+// import { triggerConfetti } from "@/lib/utils"
 
 // FUNÇÕES AUXILIARES
 // Estas funções ajudam a buscar dados específicos
@@ -308,10 +308,10 @@ export default function CursoPage() {
 
     setQuizResult({ score: percentageScore, passed, feedback, explanations })
 
-    // Confete se passou
-    if (passed) {
-      triggerConfetti(150, 90, 0.6)
-    }
+    // Confete se passou - DESATIVADO conforme solicitação
+    // if (passed) {
+    //   triggerConfetti(150, 90, 0.6)
+    // }
 
     // Atualiza tentativas
     const updatedAttempts = (userProgress.quizAttempts || []).filter((qa) => qa.quizId !== activeQuiz.id)
@@ -424,7 +424,7 @@ export default function CursoPage() {
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-            <p className="text-neutral-600">Carregando curso...</p>
+            <p className="text-neutral-600">Carregando treinamento...</p>
           </div>
         </div>
       </div>
@@ -439,7 +439,7 @@ export default function CursoPage() {
       {/* HEADER DO CURSO */}
       <header className="bg-slate-900 text-white px-4 py-3 flex items-center justify-between border-b">
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          {/* Botão voltar */}
+          {/* Botão voltar para Meus Treinamentos */}
           <Link
             href="/meus-cursos"
             className="flex items-center text-sm hover:text-teal-300 transition-colors flex-shrink-0"
@@ -592,11 +592,16 @@ export default function CursoPage() {
                           {/* BOTÃO DE SUBMISSÃO */}
                           <div className="flex justify-center pt-6">
                             <Button
-                              onClick={handleQuizSubmit}
+                              onClick={() => {
+                                // Exibe confirmação antes de finalizar avaliação
+                                if (window.confirm("Tem certeza que deseja finalizar sua atividade?")) {
+                                  handleQuizSubmit()
+                                }
+                              }}
                               disabled={quizAttemptsMade >= activeQuiz.maxAttempts}
                               className="bg-teal-600 hover:bg-teal-700 px-8 py-3 text-lg font-medium"
                             >
-                              Conferir resposta
+                              Finalizar Avaliação
                             </Button>
                           </div>
                         </div>
@@ -756,7 +761,7 @@ export default function CursoPage() {
         >
           {/* HEADER DA SIDEBAR */}
           <div className="flex items-center justify-between p-4 border-b bg-slate-50">
-            <h3 className="font-semibold text-neutral-800">Conteúdo do curso</h3>
+            <h3 className="font-semibold text-neutral-800">Conteúdo do treinamento</h3>
             <Button
               onClick={() => setSidebarVisible(false)}
               variant="ghost"
@@ -851,7 +856,7 @@ export default function CursoPage() {
               className="w-full bg-teal-600 hover:bg-teal-700 shadow-lg flex items-center justify-center gap-2"
             >
               <Menu className="h-4 w-4" />
-              Conteúdo do curso
+              Conteúdo do treinamento
             </Button>
           </div>
         )}

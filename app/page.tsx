@@ -72,7 +72,7 @@ export default function HomePage() {
                 className="bg-amber-500 hover:bg-amber-600 text-neutral-900 text-lg px-8 py-6 rounded-lg"
               >
                 <Link href="/cursos">
-                  Conheça Nossos Cursos <ChevronRight className="ml-2 h-5 w-5" />
+                  Conheça Nossos Treinamentos <ChevronRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </ScrollRevealSection>
@@ -172,7 +172,7 @@ export default function HomePage() {
           <div className="container px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <ShoppingBag className="h-10 w-10 text-teal-600 mx-auto mb-2" />
-              <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 text-balance">Cursos em Destaque</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 text-balance">Treinamentos em Destaque</h2>
               <p className="text-lg text-neutral-600 max-w-xl mx-auto mt-4">
                 Confira alguns dos nossos treinamentos mais procurados e comece a transformar sua carreira hoje mesmo.
               </p>
@@ -189,7 +189,7 @@ export default function HomePage() {
             <div className="text-center mt-12">
               <Button asChild size="lg" className="bg-teal-600 hover:bg-teal-700">
                 <Link href="/cursos">
-                  Ver Todos os Cursos <ChevronRight className="ml-2 h-4 w-4" />
+                  Ver Todos os Treinamentos <ChevronRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>

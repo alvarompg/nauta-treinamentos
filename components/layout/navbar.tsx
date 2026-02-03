@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils"
 // Lista de itens do menu principal
 const navItems = [
   { label: "Início", href: "/" },
-  { label: "Cursos", href: "/cursos" },
+  { label: "Treinamentos", href: "/cursos" }, // Alterado de "Cursos" para "Treinamentos"
   { label: "Sobre Nós", href: "/sobre" },
 ]
 
@@ -91,16 +91,17 @@ export default function Navbar() {
 
         {/* AÇÕES DO USUÁRIO - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
-          {/* Carrinho de compras */}
+          {/* Carrinho de compras - DESATIVADO TEMPORARIAMENTE
+          Será reativado no futuro quando implementarmos o fluxo de compra completo
           <Link href="/carrinho">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
-              {/* Badge com número de itens (exemplo) */}
               <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-teal-600 text-xs text-white flex items-center justify-center">
                 2
               </span>
             </Button>
           </Link>
+          */}
 
           {/* Menu do usuário */}
           {user ? (
@@ -139,7 +140,7 @@ export default function Navbar() {
                 <DropdownMenuItem asChild>
                   <Link href="/meus-cursos" className="cursor-pointer">
                     <BookOpen className="mr-2 h-4 w-4" />
-                    Meus Cursos
+                    Meus Treinamentos
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -247,7 +248,7 @@ export default function Navbar() {
                         <Link href="/meus-cursos">
                           <Button variant="outline" className="w-full justify-start bg-transparent">
                             <BookOpen className="mr-2 h-4 w-4" />
-                            Meus Cursos
+                            Meus Treinamentos
                           </Button>
                         </Link>
                       </SheetClose>
