@@ -8,8 +8,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import type { Course } from "@/lib/data"
-import { triggerConfetti } from "@/lib/utils"
-import { ShoppingCartIcon, Eye } from "lucide-react"
+// import { triggerConfetti } from "@/lib/utils" // DESATIVADO: Confete removido conforme solicitação
+import { Eye } from "lucide-react" // Removido ShoppingCartIcon
 
 // Interface para as props do componente
 interface CourseCardProps {
@@ -18,37 +18,40 @@ interface CourseCardProps {
 }
 
 export default function CourseCard({ course, onAddToCart }: CourseCardProps) {
-  // Função para adicionar curso ao carrinho
-  const handleAddToCart = () => {
-    triggerConfetti(100, 70, 0.6) // Dispara efeito de confete
+  // URL do WhatsApp para compra direta
+  const whatsappUrl = "https://api.whatsapp.com/send/?phone=%2B5511992704147&text&type=phone_number&app_absent=0"
 
-    // Se foi passada uma função de callback, executa ela
+  // Função para redirecionar para WhatsApp (Compre Já!)
+  const handleBuyNow = () => {
+    // Redireciona para o WhatsApp para finalizar a compra
+    window.open(whatsappUrl, "_blank")
+    
+    // Callback opcional caso seja necessário tracking
     if (onAddToCart) {
       onAddToCart(course)
     }
 
-    console.log(`Added ${course.name} to cart (simulated)`)
-    // Em uma aplicação real, aqui atualizaria o estado global do carrinho
+    console.log(`[v0] Redirecionando para WhatsApp - Treinamento: ${course.name}`)
   }
 
-  // Verifica se o curso tem desconto (preço original maior que atual)
+  // Verifica se o treinamento tem desconto (preço original maior que atual)
   const hasDiscount = course.originalPriceValue && course.originalPriceValue > course.priceValue
 
   return (
     // Card principal com efeitos de hover
     <Card className="flex flex-col overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] h-full">
-      {/* Header: Imagem do curso */}
+      {/* Header: Imagem do treinamento */}
       <CardHeader className="p-0">
         <Image
-          src={course.imageUrl || "/placeholder.svg?width=400&height=250&text=Curso"}
-          alt={`Imagem do curso ${course.name}`}
+          src={course.imageUrl || "/placeholder.svg?width=400&height=250&text=Treinamento"}
+          alt={`Imagem do treinamento ${course.name}`}
           width={400}
           height={250}
           className="object-cover w-full h-48 md:h-56"
         />
       </CardHeader>
 
-      {/* Conteúdo: Informações do curso */}
+      {/* Conteúdo: Informações do treinamento */}
       <CardContent className="flex-grow p-5 space-y-3">
         {/* Linha superior: Categoria e duração */}
         <div className="flex justify-between items-center">
@@ -60,10 +63,10 @@ export default function CourseCard({ course, onAddToCart }: CourseCardProps) {
           {course.duration && <span className="text-xs text-muted-foreground">{course.duration}</span>}
         </div>
 
-        {/* Título do curso */}
+        {/* Título do treinamento */}
         <CardTitle className="text-xl font-semibold text-neutral-800 leading-tight">{course.name}</CardTitle>
 
-        {/* Descrição do curso */}
+        {/* Descrição do treinamento */}
         <CardDescription className="text-sm text-neutral-600 min-h-[3.5rem] line-clamp-3">
           {course.shortDescription}
         </CardDescription>
@@ -89,7 +92,7 @@ export default function CourseCard({ course, onAddToCart }: CourseCardProps) {
 
         {/* Botões de ação */}
         <div className="w-full flex gap-2">
-          {/* Botão "Ver Mais" */}
+          {/* Botão "Ver Mais" - Leva para página de detalhes do treinamento */}
           <Button
             asChild
             size="sm"
@@ -101,13 +104,13 @@ export default function CourseCard({ course, onAddToCart }: CourseCardProps) {
             </Link>
           </Button>
 
-          {/* Botão "Adicionar ao Carrinho" */}
+          {/* Botão "Compre Já!" - Redireciona para WhatsApp */}
           <Button
             size="sm"
-            onClick={handleAddToCart}
-            className="flex-1 bg-amber-500 hover:bg-amber-600 text-neutral-900"
+            onClick={handleBuyNow}
+            className="flex-1 bg-amber-500 hover:bg-amber-600 text-neutral-900 font-semibold"
           >
-            <ShoppingCartIcon className="mr-1 h-4 w-4" /> Adicionar
+            Compre Já!
           </Button>
         </div>
       </CardFooter>

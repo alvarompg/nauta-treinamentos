@@ -11,7 +11,7 @@ import { mockUserCourses, type UserCourse } from "@/lib/data"
 import { GraduationCap, PlayCircle, Award } from "lucide-react"
 
 export default function MeusCursosPage() {
-  // In a real app, fetch user's courses based on logged-in user
+  // Em uma aplicação real, buscar treinamentos do usuário logado
   const userCourses: UserCourse[] = mockUserCourses
 
   return (
@@ -21,18 +21,18 @@ export default function MeusCursosPage() {
         <div className="container px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-8">
             <GraduationCap className="h-8 w-8 text-teal-600" />
-            <h1 className="text-3xl md:text-4xl font-bold text-neutral-800">Meus Cursos</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-neutral-800">Meus Treinamentos</h1>
           </div>
 
           {userCourses.length === 0 ? (
             <div className="text-center py-10">
               <GraduationCap className="h-24 w-24 text-slate-300 mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold text-neutral-700 mb-2">Você ainda não possui cursos</h2>
+              <h2 className="text-2xl font-semibold text-neutral-700 mb-2">Você ainda não possui treinamentos</h2>
               <p className="text-neutral-500 mb-6">
-                Explore nossa grade de cursos e comece sua jornada de aprendizado.
+                Explore nossa grade de treinamentos e comece sua jornada de aprendizado.
               </p>
               <Button asChild className="bg-teal-600 hover:bg-teal-700">
-                <Link href="/cursos">Ver Cursos Disponíveis</Link>
+                <Link href="/cursos">Ver Treinamentos Disponíveis</Link>
               </Button>
             </div>
           ) : (
@@ -75,7 +75,7 @@ export default function MeusCursosPage() {
                     ) : (
                       <Button asChild className="w-full bg-teal-600 hover:bg-teal-700">
                         <Link href={`/curso/${course.courseId}`}>
-                          <PlayCircle className="mr-2 h-4 w-4" /> Acessar Curso
+                          <PlayCircle className="mr-2 h-4 w-4" /> Acessar Treinamento
                         </Link>
                       </Button>
                     )}

@@ -31,7 +31,7 @@ const qualityStatsLocal = [
   {
     IconComponent: BookOpen,
     value: "50+",
-    label: "Cursos Disponíveis",
+    label: "Treinamentos Disponíveis",
   },
 ]
 
@@ -60,7 +60,7 @@ export default function CursosPage() {
         <section className="bg-slate-100 py-12 md:py-16">
           <div className="container text-center px-4 sm:px-6 lg:px-8">
             <AnimatedHeading
-              text="Nossos Cursos"
+              text="Nossos Treinamentos"
               className="text-4xl md:text-5xl font-bold text-teal-700 mb-4"
               el="h1"
             />
@@ -79,7 +79,7 @@ export default function CursosPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Buscar cursos pelo nome ou palavra-chave..."
+                  placeholder="Buscar treinamentos pelo nome ou palavra-chave..."
                   className="pl-10 w-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -104,7 +104,7 @@ export default function CursosPage() {
             </div>
 
             <h2 className="text-2xl font-semibold text-neutral-800 mb-8">
-              Exibindo {filteredCourses.length} de {courses.length} cursos
+              Exibindo {filteredCourses.length} de {courses.length} treinamentos
             </h2>
 
             {filteredCourses.length > 0 ? (
@@ -117,7 +117,7 @@ export default function CursosPage() {
               </div>
             ) : (
               <p className="text-center text-neutral-600 text-lg py-10">
-                Nenhum curso encontrado para os critérios selecionados. Tente ajustar sua busca ou filtros.
+                Nenhum treinamento encontrado para os critérios selecionados. Tente ajustar sua busca ou filtros.
               </p>
             )}
           </div>

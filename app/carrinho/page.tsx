@@ -1,3 +1,19 @@
+/* ============================================
+ * PÁGINA DO CARRINHO - TEMPORARIAMENTE DESATIVADA
+ * ============================================
+ * 
+ * Esta página foi desativada conforme solicitação de refatoração.
+ * O fluxo de venda agora é feito diretamente via WhatsApp.
+ * 
+ * QUANDO REATIVAR NO FUTURO:
+ * - Remova os comentários desta página
+ * - Reative o ícone do carrinho na navbar (components/layout/navbar.tsx)
+ * - Reative o botão "Adicionar ao Carrinho" no CourseCard (components/ui/course-card.tsx)
+ * - Integre com sistema de pagamento (Stripe, PagSeguro, etc)
+ * 
+ * ============================================
+ */
+
 "use client"
 
 import { useState } from "react"
@@ -14,11 +30,13 @@ import { Trash2, ShoppingCart, ChevronRight } from "lucide-react"
 export default function CarrinhoPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems)
 
+  // Calcula o total dos itens no carrinho
   const total = cartItems.reduce((sum, item) => sum + item.priceValue * item.quantity, 0)
 
+  // Remove item do carrinho
   const handleRemoveItem = (itemId: string) => {
     setCartItems((currentItems) => currentItems.filter((item) => item.id !== itemId))
-    // In a real app, also update backend/localStorage
+    // Em uma aplicação real, também atualizar backend/localStorage
   }
 
   return (
@@ -35,9 +53,9 @@ export default function CarrinhoPage() {
             <div className="text-center py-10">
               <ShoppingCart className="h-24 w-24 text-slate-300 mx-auto mb-4" />
               <h2 className="text-2xl font-semibold text-neutral-700 mb-2">Seu carrinho está vazio</h2>
-              <p className="text-neutral-500 mb-6">Adicione cursos ao seu carrinho para vê-los aqui.</p>
+              <p className="text-neutral-500 mb-6">Adicione treinamentos ao seu carrinho para vê-los aqui.</p>
               <Button asChild className="bg-teal-600 hover:bg-teal-700">
-                <Link href="/cursos">Explorar Cursos</Link>
+                <Link href="/cursos">Explorar Treinamentos</Link>
               </Button>
             </div>
           ) : (
@@ -49,7 +67,7 @@ export default function CarrinhoPage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-[100px] hidden md:table-cell">Imagem</TableHead>
-                          <TableHead>Curso</TableHead>
+                          <TableHead>Treinamento</TableHead>
                           <TableHead className="text-right">Preço</TableHead>
                           <TableHead className="text-center">Ação</TableHead>
                         </TableRow>

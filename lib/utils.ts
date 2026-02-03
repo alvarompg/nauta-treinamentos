@@ -13,11 +13,14 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Função triggerConfetti: Dispara efeito de confete na tela
-// Usada quando o usuário completa ações importantes (passar em quiz, concluir curso)
+// TEMPORARIAMENTE DESATIVADA conforme solicitação de refatoração
+// Esta função foi usada quando o usuário completava ações importantes (passar em quiz, concluir treinamento)
 // Parâmetros:
 // - particleCount: número de partículas de confete (padrão: 100)
 // - spread: ângulo de dispersão das partículas (padrão: 70)
 // - originY: posição vertical de origem (0.6 = 60% da altura da tela)
+
+/* FUNÇÃO COMENTADA - Será reativada no futuro se necessário
 export function triggerConfetti(particleCount = 100, spread = 70, originY = 0.6) {
   confetti({
     particleCount, // Quantidade de partículas
@@ -39,6 +42,7 @@ export function triggerConfetti(particleCount = 100, spread = 70, originY = 0.6)
   //   gravity: 0.8                    // Gravidade mais forte
   // });
 }
+*/
 
 // Função opcional para tocar som (comentada)
 // Em uma aplicação real, você adicionaria um arquivo de áudio

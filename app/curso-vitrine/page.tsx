@@ -24,15 +24,23 @@ export default function CursoDetalhesPage() {
   const courseId = searchParams.get("id")
   const course = getCourseById(courseId)
 
+  // URL do WhatsApp para compra/matrícula
+  const whatsappUrl = "https://api.whatsapp.com/send/?phone=%2B5511992704147&text&type=phone_number&app_absent=0"
+
+  // Função para redirecionar para WhatsApp
+  const handleEnroll = () => {
+    window.open(whatsappUrl, "_blank")
+  }
+
   if (!course) {
     return (
       <div className="flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-grow container py-10 text-center">
-          <h1 className="text-2xl font-bold">Curso não encontrado</h1>
-          <p>O curso que você está procurando não foi encontrado.</p>
+          <h1 className="text-2xl font-bold">Treinamento não encontrado</h1>
+          <p>O treinamento que você está procurando não foi encontrado.</p>
           <Button asChild className="mt-4">
-            <Link href="/cursos">Ver todos os cursos</Link>
+            <Link href="/cursos">Ver todos os treinamentos</Link>
           </Button>
         </main>
         <Footer />
@@ -57,14 +65,14 @@ export default function CursoDetalhesPage() {
                   </span>
                 </ScrollRevealSection>
                 <AnimatedHeading
-                  text="Vitrine de Cursos"
+                  text="Vitrine de Treinamentos"
                   className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight my-3 text-balance"
                   el="h1"
                   stagger={0.02}
                 />
                 <ScrollRevealSection delay={0.3}>
                   <p className="text-lg text-slate-300 mb-6 text-balance">
-                    Explore todos os detalhes deste curso e matricule-se para começar sua jornada de aprendizado.
+                    Explore todos os detalhes deste treinamento e matricule-se para começar sua jornada de aprendizado.
                   </p>
                   <div className="flex items-center gap-4 mb-8 text-sm">
                     {course.duration && (
@@ -78,6 +86,7 @@ export default function CursoDetalhesPage() {
                   </div>
                   <Button
                     size="lg"
+                    onClick={handleEnroll}
                     className="bg-amber-500 hover:bg-amber-600 text-neutral-900 text-lg px-8 py-6 rounded-lg"
                   >
                     Matricule-se Agora <ChevronRight className="ml-2 h-5 w-5" />
@@ -86,8 +95,8 @@ export default function CursoDetalhesPage() {
               </div>
               <ScrollRevealSection delay={0.2} className="hidden md:block">
                 <Image
-                  src={course.imageUrl || "/placeholder.svg?width=500&height=350&text=Detalhe+Curso"}
-                  alt={`Imagem do curso ${course.name}`}
+                  src={course.imageUrl || "/placeholder.svg?width=500&height=350&text=Detalhe+Treinamento"}
+                  alt={`Imagem do treinamento ${course.name}`}
                   width={500}
                   height={350}
                   className="rounded-xl shadow-2xl"
@@ -123,7 +132,7 @@ export default function CursoDetalhesPage() {
               {course.longDescription && (
                 <ScrollRevealSection>
                   <h2 className="flex items-center gap-2 text-2xl md:text-3xl font-semibold text-neutral-800 mb-6">
-                    <BookOpen className="h-7 w-7 text-teal-600" /> Sobre o Curso
+                    <BookOpen className="h-7 w-7 text-teal-600" /> Sobre o Treinamento
                   </h2>
                   <p className="text-neutral-600 leading-relaxed whitespace-pre-line">{course.longDescription}</p>
                 </ScrollRevealSection>
@@ -132,7 +141,7 @@ export default function CursoDetalhesPage() {
               {courseSpecificTestimonial && (
                 <ScrollRevealSection>
                   <h2 className="flex items-center gap-2 text-2xl md:text-3xl font-semibold text-neutral-800 mb-6">
-                    <Star className="h-7 w-7 text-teal-600" /> O que falam sobre este curso
+                    <Star className="h-7 w-7 text-teal-600" /> O que falam sobre este treinamento
                   </h2>
                   <TestimonialItem testimonial={courseSpecificTestimonial} />
                 </ScrollRevealSection>
@@ -161,7 +170,7 @@ export default function CursoDetalhesPage() {
               <ScrollRevealSection className="sticky top-24">
                 <Card className="shadow-lg rounded-xl">
                   <CardHeader className="bg-slate-50 rounded-t-xl">
-                    <CardTitle className="text-xl text-teal-700">Detalhes do Curso</CardTitle>
+                    <CardTitle className="text-xl text-teal-700">Detalhes do Treinamento</CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-4">
                     <div>
@@ -192,7 +201,7 @@ export default function CursoDetalhesPage() {
                     )}
                     <div className="pt-4">
                       <p className="text-2xl font-bold text-teal-600 mb-3">{course.price}</p>
-                      <Button size="lg" className="w-full bg-amber-500 hover:bg-amber-600 text-neutral-900">
+                      <Button onClick={handleEnroll} size="lg" className="w-full bg-amber-500 hover:bg-amber-600 text-neutral-900">
                         Matricule-se Agora
                       </Button>
                     </div>
@@ -212,6 +221,7 @@ export default function CursoDetalhesPage() {
               Invista na sua carreira com o {course.name} e destaque-se no mercado offshore.
             </p>
             <Button
+              onClick={handleEnroll}
               size="lg"
               className="bg-amber-500 hover:bg-amber-600 text-neutral-900 text-lg px-10 py-6 rounded-lg"
             >
