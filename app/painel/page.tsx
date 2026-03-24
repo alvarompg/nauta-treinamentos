@@ -17,10 +17,14 @@ import { useAuth } from "@/lib/auth-context"
 
 export default function PainelPage() {
   const router = useRouter()
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isLoading } = useAuth()
 
   // Proteção: Redireciona usuários não autorizados
+  // Só executa o redirecionamento APÓS o carregamento inicial do localStorage
   useEffect(() => {
+    // Aguarda carregar dados do localStorage antes de verificar
+    if (isLoading) return
+
     if (!user) {
       // Não está logado: vai para login
       router.push("/login")
@@ -28,9 +32,23 @@ export default function PainelPage() {
       // Está logado mas não é admin: volta para home
       router.push("/")
     }
-  }, [user, isAdmin, router])
+  }, [user, isAdmin, isLoading, router])
 
-  // Se não for admin, não renderiza nada (evita flash de conteúdo)
+  // Mostra loading enquanto verifica autenticação
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+            <p className="text-neutral-600">Verificando acesso...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Se não for admin (após verificação), não renderiza nada (evita flash de conteúdo)
   if (!user || !isAdmin) {
     return null
   }
@@ -38,8 +56,8 @@ export default function PainelPage() {
   // Cards de navegação do painel
   const painelCards = [
     {
-      title: "Gerenciar Cursos",
-      description: "Criar, editar e organizar cursos da plataforma",
+      title: "Gerenciar Treinamentos",
+      description: "Criar, editar e organizar treinamentos da plataforma",
       icon: BookOpen,
       href: "/admin/cursos",
       color: "text-teal-600",
@@ -127,7 +145,7 @@ export default function PainelPage() {
           <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card>
               <CardHeader className="pb-3">
-                <CardDescription>Total de Cursos</CardDescription>
+                <CardDescription>Total de Treinamentos</CardDescription>
                 <CardTitle className="text-3xl">24</CardTitle>
               </CardHeader>
             </Card>

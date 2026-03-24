@@ -25,6 +25,7 @@ interface User {
 interface AuthContextType {
   user: User | null // Dados do usuário logado (null se não estiver logado)
   isAdmin: boolean // Verifica se o usuário é administrador
+  isLoading: boolean // Indica se está verificando autenticação (evita redirecionamentos prematuros)
   login: (email: string, password: string) => boolean // Função de login tradicional
   loginWithGoogle: () => void // Função de login com Google
   loginAsAdmin: () => void // Função para simular login como admin
@@ -38,6 +39,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Estado: Armazena os dados do usuário logado
   const [user, setUser] = useState<User | null>(null)
+  // Estado: Indica se ainda está carregando dados de autenticação do localStorage
+  const [isLoading, setIsLoading] = useState(true)
 
   // useEffect: Verifica se existe usuário salvo no localStorage ao carregar a página
   useEffect(() => {
@@ -45,6 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (savedUser) {
       setUser(JSON.parse(savedUser))
     }
+    // Marca que terminou de carregar (independente de ter usuário ou não)
+    setIsLoading(false)
   }, [])
 
   // Função: Login tradicional com email e senha
@@ -107,7 +112,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Retorna o Provider com todas as funcionalidades disponíveis
   return (
-    <AuthContext.Provider value={{ user, isAdmin, login, loginWithGoogle, loginAsAdmin, logout }}>
+    <AuthContext.Provider value={{ user, isAdmin, isLoading, login, loginWithGoogle, loginAsAdmin, logout }}>
       {children}
     </AuthContext.Provider>
   )
