@@ -24,17 +24,20 @@ import { courses, type Course } from "@/lib/data"
 
 export default function GerenciarCursosPage() {
   const router = useRouter()
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isLoading } = useAuth()
   const [cursosList, setCursosList] = useState<Course[]>(courses)
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null)
 
+  // Proteção: Aguarda carregar dados do localStorage antes de verificar
   useEffect(() => {
+    if (isLoading) return
+    
     if (!user) {
       router.push("/login")
     } else if (!isAdmin) {
       router.push("/")
     }
-  }, [user, isAdmin, router])
+  }, [user, isAdmin, isLoading, router])
 
   const handleDeleteClick = (course: Course) => {
     setCourseToDelete(course)
@@ -44,8 +47,22 @@ export default function GerenciarCursosPage() {
     if (courseToDelete) {
       setCursosList(cursosList.filter((c) => c.id !== courseToDelete.id))
       setCourseToDelete(null)
-      console.log(`Curso ${courseToDelete.name} deletado`)
+      console.log(`Treinamento ${courseToDelete.name} deletado`)
     }
+  }
+
+  // Mostra loading enquanto verifica autenticação
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+            <p className="text-neutral-600">Verificando acesso...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!user || !isAdmin) {
@@ -63,15 +80,15 @@ export default function GerenciarCursosPage() {
                 <Link href="/painel" className="hover:text-teal-600">
                   Painel
                 </Link>{" "}
-                / Gerenciar Cursos
+                / Gerenciar Treinamentos
               </div>
-              <h1 className="text-3xl font-bold text-neutral-900">Gerenciar Cursos</h1>
-              <p className="text-muted-foreground mt-1">Visualize, edite e organize todos os cursos da plataforma</p>
+              <h1 className="text-3xl font-bold text-neutral-900">Gerenciar Treinamentos</h1>
+              <p className="text-muted-foreground mt-1">Visualize, edite e organize todos os treinamentos da plataforma</p>
             </div>
             <Link href="/admin/cursos/novo">
               <Button size="lg" className="bg-teal-600 hover:bg-teal-700">
                 <Plus className="h-5 w-5 mr-2" />
-                Criar Novo Curso
+                Criar Novo Treinamento
               </Button>
             </Link>
           </div>
@@ -79,13 +96,13 @@ export default function GerenciarCursosPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
-                <CardDescription>Total de Cursos</CardDescription>
+                <CardDescription>Total de Treinamentos</CardDescription>
                 <CardTitle className="text-2xl">{cursosList.length}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardDescription>Cursos Publicados</CardDescription>
+                <CardDescription>Treinamentos Publicados</CardDescription>
                 <CardTitle className="text-2xl">{cursosList.length}</CardTitle>
               </CardHeader>
             </Card>
@@ -101,7 +118,7 @@ export default function GerenciarCursosPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Todos os Cursos ({cursosList.length})
+                Todos os Treinamentos ({cursosList.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -154,8 +171,8 @@ export default function GerenciarCursosPage() {
                 {cursosList.length === 0 && (
                   <div className="text-center py-12 text-muted-foreground">
                     <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Nenhum curso cadastrado ainda</p>
-                    <p className="text-sm">Clique em "Criar Novo Curso" para começar</p>
+                    <p className="text-lg">Nenhum treinamento cadastrado ainda</p>
+                    <p className="text-sm">Clique em "Criar Novo Treinamento" para começar</p>
                   </div>
                 )}
               </div>
@@ -170,7 +187,7 @@ export default function GerenciarCursosPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Você tem certeza que deseja deletar o curso <strong>{courseToDelete?.name}</strong>? Esta ação não pode
+              Você tem certeza que deseja deletar o treinamento <strong>{courseToDelete?.name}</strong>? Esta ação não pode
               ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>

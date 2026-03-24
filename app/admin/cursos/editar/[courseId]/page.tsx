@@ -94,7 +94,7 @@ interface QuizQuestion {
 export default function EditarCursoPage() {
   const params = useParams()
   const router = useRouter()
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isLoading } = useAuth()
   const courseId = params.courseId as string
   const isNewCourse = courseId === "novo"
 
@@ -117,11 +117,14 @@ export default function EditarCursoPage() {
   const [itemToDelete, setItemToDelete] = useState<{ sectionId: string; itemId?: string } | null>(null)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
 
+  // Proteção: Aguarda carregar dados do localStorage antes de verificar
   useEffect(() => {
+    if (isLoading) return
+    
     if (!user || !isAdmin) {
       router.push("/")
     }
-  }, [user, isAdmin, router])
+  }, [user, isAdmin, isLoading, router])
 
   useEffect(() => {
     if (!isNewCourse) {
@@ -252,13 +255,27 @@ export default function EditarCursoPage() {
   }
 
   const handleSave = () => {
-    console.log("Salvando curso:", formData)
+    console.log("Salvando treinamento:", formData)
     setUnsavedChanges(false)
-    alert("Curso salvo com sucesso!")
+    alert("Treinamento salvo com sucesso!")
   }
 
   const handlePreview = () => {
     window.open("/curso-vitrine?id=preview", "_blank")
+  }
+
+  // Mostra loading enquanto verifica autenticação
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+            <p className="text-neutral-600">Verificando acesso...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!user || !isAdmin) {
@@ -269,8 +286,8 @@ export default function EditarCursoPage() {
     { id: "geral", label: "Informações Gerais", icon: FileText },
     { id: "preco", label: "Preço e Promoção", icon: DollarSign },
     { id: "modulos", label: "Módulos e Aulas", icon: BookOpen },
-    { id: "mensagens", label: "Mensagens do Curso", icon: MessageSquare },
-    { id: "publicar", label: "Publicar Curso", icon: Upload },
+    { id: "mensagens", label: "Mensagens do Treinamento", icon: MessageSquare },
+    { id: "publicar", label: "Publicar Treinamento", icon: Upload },
   ]
 
   return (
@@ -281,18 +298,18 @@ export default function EditarCursoPage() {
             ← Voltar
           </Button>
           <div>
-            <h1 className="text-xl font-bold">{isNewCourse ? "Criar Novo Curso" : "Editar Curso"}</h1>
+            <h1 className="text-xl font-bold">{isNewCourse ? "Criar Novo Treinamento" : "Editar Treinamento"}</h1>
             {unsavedChanges && <p className="text-xs text-amber-600">● Alterações não salvas</p>}
           </div>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" onClick={handlePreview} className="bg-transparent">
             <Eye className="h-4 w-4 mr-2" />
-            Visualizar Curso
+            Visualizar Treinamento
           </Button>
           <Button onClick={handleSave} className="bg-teal-600 hover:bg-teal-700">
             <Save className="h-4 w-4 mr-2" />
-            Salvar Curso
+            Salvar Treinamento
           </Button>
         </div>
       </header>
@@ -327,12 +344,12 @@ export default function EditarCursoPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Informações Gerais</CardTitle>
-                  <CardDescription>Configure os detalhes básicos do curso</CardDescription>
+                  <CardDescription>Configure os detalhes básicos do treinamento</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">
-                      Título do curso <span className="text-red-500">*</span>
+                      Título do treinamento <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="title"
@@ -348,7 +365,7 @@ export default function EditarCursoPage() {
                     </Label>
                     <Textarea
                       id="shortDescription"
-                      placeholder="Uma breve descrição do curso (máx. 160 caracteres)"
+                      placeholder="Uma breve descrição do treinamento (máx. 160 caracteres)"
                       rows={2}
                       maxLength={160}
                       value={formData.shortDescription}
@@ -363,7 +380,7 @@ export default function EditarCursoPage() {
                     </Label>
                     <Textarea
                       id="bannerDescription"
-                      placeholder="Descrição que aparecerá no banner do curso"
+                      placeholder="Descrição que aparecerá no banner do treinamento"
                       rows={3}
                       value={formData.bannerDescription}
                       onChange={(e) => updateField("bannerDescription", e.target.value)}
@@ -374,7 +391,7 @@ export default function EditarCursoPage() {
                     <Label htmlFor="fullDescription">Descrição completa (Editor Rico)</Label>
                     <Textarea
                       id="fullDescription"
-                      placeholder="Descrição detalhada do curso..."
+                      placeholder="Descrição detalhada do treinamento..."
                       rows={6}
                       value={formData.fullDescription}
                       onChange={(e) => updateField("fullDescription", e.target.value)}
@@ -411,7 +428,7 @@ export default function EditarCursoPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="imageFile">
-                      Imagem do curso <span className="text-red-500">*</span>
+                      Imagem do treinamento <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="imageFile"
@@ -521,12 +538,12 @@ export default function EditarCursoPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Preço e Promoção</CardTitle>
-                  <CardDescription>Defina os valores do curso</CardDescription>
+                  <CardDescription>Defina os valores do treinamento</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="price">
-                      Preço do curso (R$) <span className="text-red-500">*</span>
+                      Preço do treinamento (R$) <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="price"
