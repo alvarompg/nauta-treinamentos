@@ -35,6 +35,7 @@ import {
   X,
   ChevronUp,
   ChevronDown,
+  PenTool, // Icone para assinatura do instrutor
 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { courses } from "@/lib/data"
@@ -54,6 +55,7 @@ interface CourseFormData {
   price: number
   promotionalPrice: number
   sections: CourseSection[]
+  signatures: InstructorSignature[] // Assinaturas dos instrutores (somente admin)
 }
 
 interface CourseSection {
@@ -91,6 +93,12 @@ interface QuizQuestion {
   correctOption: number
 }
 
+// Interface para dados de assinatura do instrutor
+interface InstructorSignature {
+  instructorName: string // Nome do instrutor
+  signatureImageUrl: string // URL da imagem da assinatura
+}
+
 export default function EditarCursoPage() {
   const params = useParams()
   const router = useRouter()
@@ -113,6 +121,7 @@ export default function EditarCursoPage() {
     price: 0,
     promotionalPrice: 0,
     sections: [],
+    signatures: [{ instructorName: "", signatureImageUrl: "" }], // Inicializa com uma assinatura vazia
   })
   const [itemToDelete, setItemToDelete] = useState<{ sectionId: string; itemId?: string } | null>(null)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
@@ -178,6 +187,26 @@ export default function EditarCursoPage() {
       ? formData.languages.filter((l) => l !== lang)
       : [...formData.languages, lang]
     updateField("languages", newLanguages)
+  }
+
+  // Funções para gerenciamento de assinaturas dos instrutores
+  const addSignature = () => {
+    updateField("signatures", [...formData.signatures, { instructorName: "", signatureImageUrl: "" }])
+  }
+
+  const updateSignature = (index: number, field: keyof InstructorSignature, value: string) => {
+    const newSignatures = [...formData.signatures]
+    newSignatures[index] = { ...newSignatures[index], [field]: value }
+    updateField("signatures", newSignatures)
+  }
+
+  const removeSignature = (index: number) => {
+    if (formData.signatures.length > 1) {
+      updateField(
+        "signatures",
+        formData.signatures.filter((_, i) => i !== index),
+      )
+    }
   }
 
   const addSection = () => {
@@ -286,6 +315,7 @@ export default function EditarCursoPage() {
     { id: "geral", label: "Informações Gerais", icon: FileText },
     { id: "preco", label: "Preço e Promoção", icon: DollarSign },
     { id: "modulos", label: "Módulos e Aulas", icon: BookOpen },
+    { id: "assinaturas", label: "Assinatura do Instrutor", icon: PenTool }, // Nova seção para assinaturas
     { id: "mensagens", label: "Mensagens do Treinamento", icon: MessageSquare },
     { id: "publicar", label: "Publicar Treinamento", icon: Upload },
   ]
@@ -802,10 +832,119 @@ export default function EditarCursoPage() {
               </div>
             )}
 
+            {/* SEÇÃO DE ASSINATURAS DO INSTRUTOR - Somente para administradores */}
+            {activeSection === "assinaturas" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PenTool className="h-5 w-5 text-teal-600" />
+                    Assinatura do Instrutor
+                  </CardTitle>
+                  <CardDescription>
+                    Adicione o nome e a assinatura dos instrutores responsáveis pelo treinamento.
+                    Estas informações aparecerão no certificado do aluno.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Lista de assinaturas cadastradas */}
+                  {formData.signatures.map((signature, index) => (
+                    <div key={index} className="border rounded-lg p-4 space-y-4 bg-slate-50">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-neutral-700">
+                          Instrutor {index + 1}
+                        </span>
+                        {formData.signatures.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeSignature(index)}
+                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Campo: Nome do instrutor */}
+                      <div className="space-y-2">
+                        <Label htmlFor={`instructor-name-${index}`}>
+                          Nome do Instrutor <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id={`instructor-name-${index}`}
+                          placeholder="Ex: Dr. Carlos Silva"
+                          value={signature.instructorName}
+                          onChange={(e) => updateSignature(index, "instructorName", e.target.value)}
+                        />
+                      </div>
+
+                      {/* Campo: Upload da assinatura */}
+                      <div className="space-y-2">
+                        <Label htmlFor={`signature-file-${index}`}>
+                          Imagem da Assinatura <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id={`signature-file-${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              updateSignature(index, "signatureImageUrl", URL.createObjectURL(file))
+                            }
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Recomendado: Imagem PNG com fundo transparente (300x100 pixels)
+                        </p>
+
+                        {/* Preview da assinatura */}
+                        {signature.signatureImageUrl && (
+                          <div className="mt-3 border rounded p-3 bg-white">
+                            <p className="text-xs text-muted-foreground mb-2">Preview da assinatura:</p>
+                            <div className="border-b border-neutral-300 pb-2 mb-2">
+                              <img
+                                src={signature.signatureImageUrl}
+                                alt={`Assinatura de ${signature.instructorName || "Instrutor"}`}
+                                className="h-16 object-contain"
+                              />
+                            </div>
+                            <p className="text-sm font-medium text-neutral-700">
+                              {signature.instructorName || "Nome do Instrutor"}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Botão para adicionar mais instrutores */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addSignature}
+                    className="w-full bg-transparent"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Adicionar Outro Instrutor
+                  </Button>
+
+                  {/* Informação sobre uso */}
+                  <div className="bg-teal-50 border border-teal-200 rounded p-4">
+                    <p className="text-sm text-teal-900">
+                      <strong>Importante:</strong> As assinaturas cadastradas aqui serão utilizadas automaticamente 
+                      na geração dos certificados dos alunos que concluírem este treinamento.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {activeSection === "mensagens" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Mensagens do Curso</CardTitle>
+                  <CardTitle>Mensagens do Treinamento</CardTitle>
                   <CardDescription>Configure mensagens automáticas e emails</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -817,8 +956,8 @@ export default function EditarCursoPage() {
             {activeSection === "publicar" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Publicar Curso</CardTitle>
-                  <CardDescription>Torne o curso disponível para os alunos</CardDescription>
+                  <CardTitle>Publicar Treinamento</CardTitle>
+                  <CardDescription>Torne o treinamento disponível para os alunos</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="bg-amber-50 border border-amber-200 rounded p-4">
@@ -828,7 +967,7 @@ export default function EditarCursoPage() {
                   </div>
                   <Button className="w-full bg-teal-600 hover:bg-teal-700" size="lg">
                     <Upload className="h-5 w-5 mr-2" />
-                    Publicar Curso
+                    Publicar Treinamento
                   </Button>
                 </CardContent>
               </Card>
