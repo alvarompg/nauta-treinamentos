@@ -38,8 +38,9 @@ import {
   PenTool, // Icone para assinatura do instrutor
 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
-import { courses } from "@/lib/data"
+import { courses, mockInstructorSignatures, type InstructorSignature as DataInstructorSignature } from "@/lib/data"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 interface CourseFormData {
   title: string
@@ -51,11 +52,11 @@ interface CourseFormData {
   imageUrl: string
   videoUrl: string
   languages: string[]
-  instructors: string[]
+  selectedInstructorIds: string[] // IDs dos instrutores selecionados (do banco de assinaturas)
   price: number
   promotionalPrice: number
   sections: CourseSection[]
-  signatures: InstructorSignature[] // Assinaturas dos instrutores (somente admin)
+  isPublished: boolean // Status de publicação do treinamento
 }
 
 interface CourseSection {
@@ -93,12 +94,6 @@ interface QuizQuestion {
   correctOption: number
 }
 
-// Interface para dados de assinatura do instrutor
-interface InstructorSignature {
-  instructorName: string // Nome do instrutor
-  signatureImageUrl: string // URL da imagem da assinatura
-}
-
 export default function EditarCursoPage() {
   const params = useParams()
   const router = useRouter()
@@ -117,11 +112,11 @@ export default function EditarCursoPage() {
     imageUrl: "",
     videoUrl: "",
     languages: [],
-    instructors: [""],
+    selectedInstructorIds: [], // IDs dos instrutores selecionados
     price: 0,
     promotionalPrice: 0,
     sections: [],
-    signatures: [{ instructorName: "", signatureImageUrl: "" }], // Inicializa com uma assinatura vazia
+    isPublished: false, // Status de publicação
   })
   const [itemToDelete, setItemToDelete] = useState<{ sectionId: string; itemId?: string } | null>(null)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
@@ -149,10 +144,11 @@ export default function EditarCursoPage() {
           imageUrl: course.imageUrl,
           videoUrl: "",
           languages: ["Português"],
-          instructors: ["Instrutor Principal"],
+          selectedInstructorIds: [], // Carregar IDs dos instrutores associados
           price: course.priceValue,
           promotionalPrice: course.originalPriceValue || 0,
           sections: [],
+          isPublished: true, // Cursos existentes já estão publicados
         })
       }
     }
@@ -163,25 +159,7 @@ export default function EditarCursoPage() {
     setUnsavedChanges(true)
   }
 
-  const addInstructor = () => {
-    updateField("instructors", [...formData.instructors, ""])
-  }
-
-  const updateInstructor = (index: number, value: string) => {
-    const newInstructors = [...formData.instructors]
-    newInstructors[index] = value
-    updateField("instructors", newInstructors)
-  }
-
-  const removeInstructor = (index: number) => {
-    if (formData.instructors.length > 1) {
-      updateField(
-        "instructors",
-        formData.instructors.filter((_, i) => i !== index),
-      )
-    }
-  }
-
+  // Toggle de idiomas
   const toggleLanguage = (lang: string) => {
     const newLanguages = formData.languages.includes(lang)
       ? formData.languages.filter((l) => l !== lang)
@@ -189,24 +167,17 @@ export default function EditarCursoPage() {
     updateField("languages", newLanguages)
   }
 
-  // Funções para gerenciamento de assinaturas dos instrutores
-  const addSignature = () => {
-    updateField("signatures", [...formData.signatures, { instructorName: "", signatureImageUrl: "" }])
+  // Toggle de instrutores selecionados (multi-select)
+  const toggleInstructor = (instructorId: string) => {
+    const newSelectedIds = formData.selectedInstructorIds.includes(instructorId)
+      ? formData.selectedInstructorIds.filter((id) => id !== instructorId)
+      : [...formData.selectedInstructorIds, instructorId]
+    updateField("selectedInstructorIds", newSelectedIds)
   }
 
-  const updateSignature = (index: number, field: keyof InstructorSignature, value: string) => {
-    const newSignatures = [...formData.signatures]
-    newSignatures[index] = { ...newSignatures[index], [field]: value }
-    updateField("signatures", newSignatures)
-  }
-
-  const removeSignature = (index: number) => {
-    if (formData.signatures.length > 1) {
-      updateField(
-        "signatures",
-        formData.signatures.filter((_, i) => i !== index),
-      )
-    }
+  // Toggle de status de publicação
+  const togglePublishStatus = () => {
+    updateField("isPublished", !formData.isPublished)
   }
 
   const addSection = () => {
@@ -525,41 +496,7 @@ export default function EditarCursoPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label>
-                      Instrutor(es) <span className="text-red-500">*</span>
-                    </Label>
-                    {formData.instructors.map((instructor, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          placeholder={`Nome do instrutor ${index + 1}`}
-                          value={instructor}
-                          onChange={(e) => updateInstructor(index, e.target.value)}
-                        />
-                        {formData.instructors.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => removeInstructor(index)}
-                            className="bg-transparent"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addInstructor}
-                      className="bg-transparent"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Adicionar Instrutor
-                    </Button>
-                  </div>
+                  {/* Seção de Instrutores removida - agora centralizada na aba "Assinaturas" */}
                 </CardContent>
               </Card>
             )}
@@ -743,16 +680,70 @@ export default function EditarCursoPage() {
                                       PDF
                                     </TabsTrigger>
                                   </TabsList>
-                                  <TabsContent value="article" className="space-y-2">
-                                    <Textarea placeholder="Conteúdo do artigo..." rows={4} />
+
+                                  {/* Artigo com suporte multilíngue */}
+                                  <TabsContent value="article" className="space-y-3">
+                                    <div className="bg-slate-50 p-3 rounded-lg">
+                                      <Tabs defaultValue="pt" className="w-full">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <Label className="text-xs text-muted-foreground">Idioma do conteúdo:</Label>
+                                          <TabsList className="h-8">
+                                            <TabsTrigger value="pt" className="text-xs h-7 px-3">
+                                              Português
+                                            </TabsTrigger>
+                                            <TabsTrigger value="en" className="text-xs h-7 px-3">
+                                              Inglês
+                                            </TabsTrigger>
+                                          </TabsList>
+                                        </div>
+                                        <TabsContent value="pt" className="mt-0">
+                                          <Textarea placeholder="Conteúdo do artigo em Português..." rows={5} />
+                                        </TabsContent>
+                                        <TabsContent value="en" className="mt-0">
+                                          <Textarea placeholder="Article content in English..." rows={5} />
+                                        </TabsContent>
+                                      </Tabs>
+                                    </div>
                                   </TabsContent>
-                                  <TabsContent value="video" className="space-y-2">
+
+                                  {/* Vídeo com transcrições em ambos idiomas */}
+                                  <TabsContent value="video" className="space-y-3">
                                     <Input type="file" accept="video/*" />
-                                    <Textarea placeholder="Transcrição em Português" rows={3} />
-                                    <Textarea placeholder="Transcrição em Inglês" rows={3} />
+                                    <div className="bg-slate-50 p-3 rounded-lg">
+                                      <Tabs defaultValue="pt" className="w-full">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <Label className="text-xs text-muted-foreground">Transcrição:</Label>
+                                          <TabsList className="h-8">
+                                            <TabsTrigger value="pt" className="text-xs h-7 px-3">
+                                              Português
+                                            </TabsTrigger>
+                                            <TabsTrigger value="en" className="text-xs h-7 px-3">
+                                              Inglês
+                                            </TabsTrigger>
+                                          </TabsList>
+                                        </div>
+                                        <TabsContent value="pt" className="mt-0">
+                                          <Textarea placeholder="Transcrição em Português..." rows={4} />
+                                        </TabsContent>
+                                        <TabsContent value="en" className="mt-0">
+                                          <Textarea placeholder="Transcript in English..." rows={4} />
+                                        </TabsContent>
+                                      </Tabs>
+                                    </div>
                                   </TabsContent>
+
+                                  {/* PDF */}
                                   <TabsContent value="pdf">
-                                    <Input type="file" accept="application/pdf" />
+                                    <div className="bg-slate-50 p-3 rounded-lg space-y-3">
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground mb-2 block">PDF em Português:</Label>
+                                        <Input type="file" accept="application/pdf" />
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground mb-2 block">PDF em Inglês (opcional):</Label>
+                                        <Input type="file" accept="application/pdf" />
+                                      </div>
+                                    </div>
                                   </TabsContent>
                                 </Tabs>
                               </div>
@@ -832,109 +823,107 @@ export default function EditarCursoPage() {
               </div>
             )}
 
-            {/* SEÇÃO DE ASSINATURAS DO INSTRUTOR - Somente para administradores */}
+            {/* SEÇÃO DE ASSINATURAS DO INSTRUTOR - Multi-select dos cadastrados */}
             {activeSection === "assinaturas" && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <PenTool className="h-5 w-5 text-teal-600" />
-                    Assinatura do Instrutor
+                    Vincular Instrutores
                   </CardTitle>
                   <CardDescription>
-                    Adicione o nome e a assinatura dos instrutores responsáveis pelo treinamento.
-                    Estas informações aparecerão no certificado do aluno.
+                    Selecione os instrutores/responsáveis que assinarão o certificado deste treinamento.
+                    Os profissionais devem estar cadastrados em Painel {">"} Assinaturas.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  {/* Lista de assinaturas cadastradas */}
-                  {formData.signatures.map((signature, index) => (
-                    <div key={index} className="border rounded-lg p-4 space-y-4 bg-slate-50">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-neutral-700">
-                          Instrutor {index + 1}
-                        </span>
-                        {formData.signatures.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeSignature(index)}
-                            className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 bg-transparent"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* Campo: Nome do instrutor */}
-                      <div className="space-y-2">
-                        <Label htmlFor={`instructor-name-${index}`}>
-                          Nome do Instrutor <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id={`instructor-name-${index}`}
-                          placeholder="Ex: Dr. Carlos Silva"
-                          value={signature.instructorName}
-                          onChange={(e) => updateSignature(index, "instructorName", e.target.value)}
-                        />
-                      </div>
-
-                      {/* Campo: Upload da assinatura */}
-                      <div className="space-y-2">
-                        <Label htmlFor={`signature-file-${index}`}>
-                          Imagem da Assinatura <span className="text-red-500">*</span>
-                        </Label>
-                        <Input
-                          id={`signature-file-${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) {
-                              updateSignature(index, "signatureImageUrl", URL.createObjectURL(file))
-                            }
-                          }}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Recomendado: Imagem PNG com fundo transparente (300x100 pixels)
-                        </p>
-
-                        {/* Preview da assinatura */}
-                        {signature.signatureImageUrl && (
-                          <div className="mt-3 border rounded p-3 bg-white">
-                            <p className="text-xs text-muted-foreground mb-2">Preview da assinatura:</p>
-                            <div className="border-b border-neutral-300 pb-2 mb-2">
-                              <img
-                                src={signature.signatureImageUrl}
-                                alt={`Assinatura de ${signature.instructorName || "Instrutor"}`}
-                                className="h-16 object-contain"
-                              />
+                  {/* Lista de instrutores disponíveis para seleção */}
+                  {mockInstructorSignatures.filter(s => s.isActive).length === 0 ? (
+                    <div className="text-center py-8 border rounded-lg border-dashed">
+                      <PenTool className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                      <p className="text-sm text-muted-foreground">Nenhum instrutor cadastrado</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Acesse Painel {">"} Assinaturas para cadastrar instrutores
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Label>Selecione os instrutores para este treinamento:</Label>
+                      {mockInstructorSignatures.filter(s => s.isActive).map((instructor) => (
+                        <div
+                          key={instructor.id}
+                          className={cn(
+                            "border rounded-lg p-4 cursor-pointer transition-all",
+                            formData.selectedInstructorIds.includes(instructor.id)
+                              ? "border-teal-500 bg-teal-50"
+                              : "border-gray-200 hover:border-gray-300 bg-white"
+                          )}
+                          onClick={() => toggleInstructor(instructor.id)}
+                        >
+                          <div className="flex items-start gap-4">
+                            <Checkbox
+                              checked={formData.selectedInstructorIds.includes(instructor.id)}
+                              onCheckedChange={() => toggleInstructor(instructor.id)}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-neutral-800">{instructor.fullName}</p>
+                                <Badge
+                                  variant="secondary"
+                                  className={
+                                    instructor.role === "responsavel"
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-blue-100 text-blue-800"
+                                  }
+                                >
+                                  {instructor.role === "responsavel" ? "Responsável" : "Instrutor"}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{instructor.technicalFormation}</p>
+                              {instructor.crea && (
+                                <p className="text-xs text-muted-foreground">CREA: {instructor.crea}</p>
+                              )}
                             </div>
-                            <p className="text-sm font-medium text-neutral-700">
-                              {signature.instructorName || "Nome do Instrutor"}
-                            </p>
+                            {instructor.signatureImageUrl && (
+                              <div className="hidden sm:block border rounded p-2 bg-white">
+                                <img
+                                  src={instructor.signatureImageUrl}
+                                  alt={`Assinatura de ${instructor.fullName}`}
+                                  className="h-10 object-contain"
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Resumo de instrutores selecionados */}
+                  {formData.selectedInstructorIds.length > 0 && (
+                    <div className="bg-teal-50 border border-teal-200 rounded p-4">
+                      <p className="text-sm font-medium text-teal-900 mb-2">
+                        Instrutores selecionados: {formData.selectedInstructorIds.length}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.selectedInstructorIds.map((id) => {
+                          const instructor = mockInstructorSignatures.find(s => s.id === id)
+                          return instructor ? (
+                            <Badge key={id} variant="secondary" className="bg-teal-100 text-teal-800">
+                              {instructor.fullName}
+                            </Badge>
+                          ) : null
+                        })}
                       </div>
                     </div>
-                  ))}
+                  )}
 
-                  {/* Botão para adicionar mais instrutores */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addSignature}
-                    className="w-full bg-transparent"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar Outro Instrutor
-                  </Button>
-
-                  {/* Informação sobre uso */}
-                  <div className="bg-teal-50 border border-teal-200 rounded p-4">
-                    <p className="text-sm text-teal-900">
-                      <strong>Importante:</strong> As assinaturas cadastradas aqui serão utilizadas automaticamente 
-                      na geração dos certificados dos alunos que concluírem este treinamento.
+                  {/* Informação sobre cadastro */}
+                  <div className="bg-amber-50 border border-amber-200 rounded p-4">
+                    <p className="text-sm text-amber-900">
+                      <strong>Dica:</strong> Para cadastrar novos instrutores ou responsáveis técnicos,
+                      acesse o menu <strong>Painel {">"} Assinaturas</strong>.
                     </p>
                   </div>
                 </CardContent>
@@ -956,19 +945,78 @@ export default function EditarCursoPage() {
             {activeSection === "publicar" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Publicar Treinamento</CardTitle>
-                  <CardDescription>Torne o treinamento disponível para os alunos</CardDescription>
+                  <CardTitle>Status de Publicação</CardTitle>
+                  <CardDescription>Gerencie a visibilidade do treinamento para os alunos</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded p-4">
-                    <p className="text-sm text-amber-900">
-                      <strong>Atenção:</strong> Certifique-se de revisar todas as informações antes de publicar.
-                    </p>
+                <CardContent className="space-y-6">
+                  {/* Status atual */}
+                  <div className={cn(
+                    "flex items-center justify-between p-4 rounded-lg border",
+                    formData.isPublished 
+                      ? "bg-green-50 border-green-200" 
+                      : "bg-gray-50 border-gray-200"
+                  )}>
+                    <div>
+                      <p className="font-medium text-neutral-800">Status Atual</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formData.isPublished 
+                          ? "Este treinamento está visível para os alunos"
+                          : "Este treinamento está oculto (rascunho)"
+                        }
+                      </p>
+                    </div>
+                    <Badge
+                      variant={formData.isPublished ? "default" : "secondary"}
+                      className={
+                        formData.isPublished 
+                          ? "bg-green-100 text-green-800 hover:bg-green-100"
+                          : "bg-gray-100 text-gray-800 hover:bg-gray-100"
+                      }
+                    >
+                      {formData.isPublished ? "Publicado" : "Rascunho"}
+                    </Badge>
                   </div>
-                  <Button className="w-full bg-teal-600 hover:bg-teal-700" size="lg">
-                    <Upload className="h-5 w-5 mr-2" />
-                    Publicar Treinamento
-                  </Button>
+
+                  {/* Avisos */}
+                  {!formData.isPublished && (
+                    <div className="bg-amber-50 border border-amber-200 rounded p-4">
+                      <p className="text-sm text-amber-900">
+                        <strong>Atenção:</strong> Certifique-se de revisar todas as informações antes de publicar.
+                        Verifique se os módulos, aulas e instrutores estão corretamente configurados.
+                      </p>
+                    </div>
+                  )}
+
+                  {formData.isPublished && (
+                    <div className="bg-red-50 border border-red-200 rounded p-4">
+                      <p className="text-sm text-red-900">
+                        <strong>Cuidado:</strong> Ao despublicar, os alunos não poderão mais acessar este treinamento
+                        na vitrine. Alunos já matriculados continuarão com acesso.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Botão de ação */}
+                  {formData.isPublished ? (
+                    <Button 
+                      onClick={togglePublishStatus}
+                      variant="outline"
+                      className="w-full border-red-300 text-red-700 hover:bg-red-50 bg-transparent" 
+                      size="lg"
+                    >
+                      <X className="h-5 w-5 mr-2" />
+                      Despublicar Treinamento
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={togglePublishStatus}
+                      className="w-full bg-teal-600 hover:bg-teal-700" 
+                      size="lg"
+                    >
+                      <Upload className="h-5 w-5 mr-2" />
+                      Publicar Treinamento
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -976,13 +1024,17 @@ export default function EditarCursoPage() {
         </main>
       </div>
 
+      {/* Modal de confirmação de exclusão de módulo/item */}
       <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogTitle>Tem certeza que deseja excluir?</AlertDialogTitle>
             <AlertDialogDescription>
-              Você tem certeza que deseja deletar este {itemToDelete?.itemId ? "item" : "seção"}? Esta ação não pode ser
-              desfeita.
+              {itemToDelete?.itemId 
+                ? "Este item será removido permanentemente do módulo."
+                : "Este módulo e todos os seus itens serão removidos permanentemente."
+              }
+              {" "}Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -999,7 +1051,7 @@ export default function EditarCursoPage() {
               }}
               className="bg-red-600 hover:bg-red-700"
             >
-              Confirmar Exclusão
+              Sim, excluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
