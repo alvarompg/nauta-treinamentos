@@ -16,6 +16,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 // Importações de dados e tipos
 import {
@@ -47,6 +54,7 @@ import {
   Clock,
   PlayCircle,
   BookOpen,
+  Globe,
 } from "lucide-react"
 
 // Importação da função de confete - DESATIVADA conforme solicitação
@@ -100,6 +108,9 @@ export default function CursoPage() {
 
   // ESTADOS MOBILE
   const [isMobile, setIsMobile] = useState(false)
+  
+  // ESTADO DE IDIOMA
+  const [selectedLanguage, setSelectedLanguage] = useState<"pt" | "en">("pt")
 
   // EFEITO DE INICIALIZAÇÃO
   // Carrega dados do curso quando a página é montada
@@ -460,16 +471,49 @@ export default function CursoPage() {
           </div>
         </div>
 
-        {/* Progresso (só desktop) */}
-        {!isMobile && (
-          <div className="flex items-center gap-4">
-            <div className="text-sm">
-              <span className="text-slate-300">Progresso: </span>
-              <span className="font-medium">{overallProgress}%</span>
-            </div>
-            <Progress value={overallProgress} className="w-32 h-2 bg-slate-700 [&>div]:bg-teal-400" />
+        {/* Seletor de Idioma e Progresso */}
+        <div className="flex items-center gap-4">
+          {/* Seletor de Idioma */}
+          <div className="flex items-center gap-2">
+            <Globe className={`h-4 w-4 text-slate-400 ${isMobile ? "hidden" : ""}`} />
+            <Select
+              value={selectedLanguage}
+              onValueChange={(value: "pt" | "en") => setSelectedLanguage(value)}
+            >
+              <SelectTrigger className="w-[90px] h-8 bg-slate-800 border-slate-700 text-white text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pt">
+                  <span className="flex items-center gap-2">
+                    <span>PT</span>
+                    {!isMobile && <span className="text-muted-foreground">Português</span>}
+                  </span>
+                </SelectItem>
+                <SelectItem value="en">
+                  <span className="flex items-center gap-2">
+                    <span>EN</span>
+                    {!isMobile && <span className="text-muted-foreground">English</span>}
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        )}
+
+          {/* Progresso (só desktop) */}
+          {!isMobile && (
+            <>
+              <div className="w-px h-6 bg-slate-700"></div>
+              <div className="flex items-center gap-3">
+                <div className="text-sm">
+                  <span className="text-slate-300">Progresso: </span>
+                  <span className="font-medium">{overallProgress}%</span>
+                </div>
+                <Progress value={overallProgress} className="w-32 h-2 bg-slate-700 [&>div]:bg-teal-400" />
+              </div>
+            </>
+          )}
+        </div>
       </header>
 
       {/* LAYOUT PRINCIPAL */}

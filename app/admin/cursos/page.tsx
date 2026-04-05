@@ -6,6 +6,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,28 +26,56 @@ import { courses, type Course } from "@/lib/data"
 
 export default function GerenciarCursosPage() {
   const router = useRouter()
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isLoading } = useAuth()
   const [cursosList, setCursosList] = useState<Course[]>(courses)
   const [courseToDelete, setCourseToDelete] = useState<Course | null>(null)
+  const [deleteConfirmationText, setDeleteConfirmationText] = useState("")
 
+  // Proteção: Aguarda carregar dados do localStorage antes de verificar
   useEffect(() => {
+    if (isLoading) return
+    
     if (!user) {
       router.push("/login")
     } else if (!isAdmin) {
       router.push("/")
     }
-  }, [user, isAdmin, router])
+  }, [user, isAdmin, isLoading, router])
 
   const handleDeleteClick = (course: Course) => {
     setCourseToDelete(course)
+    setDeleteConfirmationText("") // Limpa texto de confirmação
+  }
+
+  const handleCloseDeleteDialog = () => {
+    setCourseToDelete(null)
+    setDeleteConfirmationText("") // Limpa texto de confirmação
   }
 
   const confirmDelete = () => {
-    if (courseToDelete) {
+    if (courseToDelete && deleteConfirmationText.toLowerCase() === "excluir") {
       setCursosList(cursosList.filter((c) => c.id !== courseToDelete.id))
       setCourseToDelete(null)
-      console.log(`Curso ${courseToDelete.name} deletado`)
+      setDeleteConfirmationText("")
+      console.log(`Treinamento ${courseToDelete.name} deletado`)
     }
+  }
+  
+  // Verifica se o texto de confirmação está correto
+  const isDeleteEnabled = deleteConfirmationText.toLowerCase() === "excluir"
+
+  // Mostra loading enquanto verifica autenticação
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+            <p className="text-neutral-600">Verificando acesso...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!user || !isAdmin) {
@@ -63,15 +93,15 @@ export default function GerenciarCursosPage() {
                 <Link href="/painel" className="hover:text-teal-600">
                   Painel
                 </Link>{" "}
-                / Gerenciar Cursos
+                / Gerenciar Treinamentos
               </div>
-              <h1 className="text-3xl font-bold text-neutral-900">Gerenciar Cursos</h1>
-              <p className="text-muted-foreground mt-1">Visualize, edite e organize todos os cursos da plataforma</p>
+              <h1 className="text-3xl font-bold text-neutral-900">Gerenciar Treinamentos</h1>
+              <p className="text-muted-foreground mt-1">Visualize, edite e organize todos os treinamentos da plataforma</p>
             </div>
             <Link href="/admin/cursos/novo">
               <Button size="lg" className="bg-teal-600 hover:bg-teal-700">
                 <Plus className="h-5 w-5 mr-2" />
-                Criar Novo Curso
+                Criar Novo Treinamento
               </Button>
             </Link>
           </div>
@@ -79,13 +109,13 @@ export default function GerenciarCursosPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-3">
-                <CardDescription>Total de Cursos</CardDescription>
+                <CardDescription>Total de Treinamentos</CardDescription>
                 <CardTitle className="text-2xl">{cursosList.length}</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader className="pb-3">
-                <CardDescription>Cursos Publicados</CardDescription>
+                <CardDescription>Treinamentos Publicados</CardDescription>
                 <CardTitle className="text-2xl">{cursosList.length}</CardTitle>
               </CardHeader>
             </Card>
@@ -101,7 +131,7 @@ export default function GerenciarCursosPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Todos os Cursos ({cursosList.length})
+                Todos os Treinamentos ({cursosList.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -154,8 +184,8 @@ export default function GerenciarCursosPage() {
                 {cursosList.length === 0 && (
                   <div className="text-center py-12 text-muted-foreground">
                     <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Nenhum curso cadastrado ainda</p>
-                    <p className="text-sm">Clique em "Criar Novo Curso" para começar</p>
+                    <p className="text-lg">Nenhum treinamento cadastrado ainda</p>
+                    <p className="text-sm">Clique em "Criar Novo Treinamento" para começar</p>
                   </div>
                 )}
               </div>
@@ -165,19 +195,60 @@ export default function GerenciarCursosPage() {
       </main>
       <Footer />
 
-      <AlertDialog open={!!courseToDelete} onOpenChange={() => setCourseToDelete(null)}>
-        <AlertDialogContent>
+      {/* Modal de Exclusão Segura com Confirmação por Texto */}
+      <AlertDialog open={!!courseToDelete} onOpenChange={handleCloseDeleteDialog}>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Você tem certeza que deseja deletar o curso <strong>{courseToDelete?.name}</strong>? Esta ação não pode
-              ser desfeita.
+            <AlertDialogTitle className="text-red-600 flex items-center gap-2">
+              <Trash2 className="h-5 w-5" />
+              Exclusão Permanente
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4">
+                <p>
+                  Você está prestes a excluir permanentemente o treinamento:
+                </p>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="font-semibold text-red-900">{courseToDelete?.name}</p>
+                  <p className="text-sm text-red-700 mt-1">
+                    Todos os módulos, aulas e dados associados serão removidos.
+                  </p>
+                </div>
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-sm text-amber-900">
+                    <strong>Atenção:</strong> Esta ação não pode ser desfeita. Alunos matriculados
+                    perderão acesso a este treinamento.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-delete" className="text-sm font-medium text-neutral-700">
+                    Para confirmar, digite <span className="font-bold text-red-600">excluir</span> abaixo:
+                  </Label>
+                  <Input
+                    id="confirm-delete"
+                    placeholder="Digite 'excluir' para confirmar"
+                    value={deleteConfirmationText}
+                    onChange={(e) => setDeleteConfirmationText(e.target.value)}
+                    className="border-neutral-300 focus:border-red-500 focus:ring-red-500"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 focus:ring-red-600">
-              Confirmar Exclusão
+            <AlertDialogCancel onClick={handleCloseDeleteDialog}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={!isDeleteEnabled}
+              className={`
+                ${isDeleteEnabled 
+                  ? "bg-red-600 hover:bg-red-700 focus:ring-red-600" 
+                  : "bg-gray-300 cursor-not-allowed hover:bg-gray-300"
+                }
+              `}
+            >
+              Excluir Permanentemente
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

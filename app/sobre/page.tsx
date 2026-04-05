@@ -35,9 +35,8 @@ export default function SobrePage() {
           <Image
             src="/placeholder.svg?width=1920&height=600&text=Nossa+Equipe+e+Missão"
             alt="Equipe Nauta Treinamentos em reunião estratégica"
-            layout="fill"
-            objectFit="cover"
-            className="absolute inset-0 opacity-30 z-0"
+            fill
+            className="absolute inset-0 opacity-30 z-0 object-cover"
             priority
           />
           <div className="container relative z-10 text-center px-4 sm:px-6 lg:px-8">
@@ -209,7 +208,7 @@ export default function SobrePage() {
               Transforme seu Futuro Profissional Conosco
             </h2>
             <p className="text-lg text-teal-100 max-w-xl mx-auto mb-8 text-balance">
-              Explore nossos cursos e descubra como a Nauta Treinamentos pode impulsionar sua carreira no setor
+              Explore nossos treinamentos e descubra como a Nauta Treinamentos pode impulsionar sua carreira no setor
               offshore.
             </p>
             <Button
@@ -218,7 +217,7 @@ export default function SobrePage() {
               className="bg-amber-500 hover:bg-amber-600 text-neutral-900 text-lg px-8 py-6 rounded-lg"
             >
               <Link href="/cursos">
-                Ver Todos os Cursos <ChevronRight className="ml-2 h-5 w-5" />
+                Ver Todos os Treinamentos <ChevronRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
           </div>

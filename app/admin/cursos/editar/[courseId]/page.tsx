@@ -35,10 +35,12 @@ import {
   X,
   ChevronUp,
   ChevronDown,
+  PenTool, // Icone para assinatura do instrutor
 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
-import { courses } from "@/lib/data"
+import { courses, mockInstructorSignatures, type InstructorSignature as DataInstructorSignature } from "@/lib/data"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 interface CourseFormData {
   title: string
@@ -50,10 +52,11 @@ interface CourseFormData {
   imageUrl: string
   videoUrl: string
   languages: string[]
-  instructors: string[]
+  selectedInstructorIds: string[] // IDs dos instrutores selecionados (do banco de assinaturas)
   price: number
   promotionalPrice: number
   sections: CourseSection[]
+  isPublished: boolean // Status de publicação do treinamento
 }
 
 interface CourseSection {
@@ -94,7 +97,7 @@ interface QuizQuestion {
 export default function EditarCursoPage() {
   const params = useParams()
   const router = useRouter()
-  const { user, isAdmin } = useAuth()
+  const { user, isAdmin, isLoading } = useAuth()
   const courseId = params.courseId as string
   const isNewCourse = courseId === "novo"
 
@@ -109,19 +112,23 @@ export default function EditarCursoPage() {
     imageUrl: "",
     videoUrl: "",
     languages: [],
-    instructors: [""],
+    selectedInstructorIds: [], // IDs dos instrutores selecionados
     price: 0,
     promotionalPrice: 0,
     sections: [],
+    isPublished: false, // Status de publicação
   })
   const [itemToDelete, setItemToDelete] = useState<{ sectionId: string; itemId?: string } | null>(null)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
 
+  // Proteção: Aguarda carregar dados do localStorage antes de verificar
   useEffect(() => {
+    if (isLoading) return
+    
     if (!user || !isAdmin) {
       router.push("/")
     }
-  }, [user, isAdmin, router])
+  }, [user, isAdmin, isLoading, router])
 
   useEffect(() => {
     if (!isNewCourse) {
@@ -137,10 +144,11 @@ export default function EditarCursoPage() {
           imageUrl: course.imageUrl,
           videoUrl: "",
           languages: ["Português"],
-          instructors: ["Instrutor Principal"],
+          selectedInstructorIds: [], // Carregar IDs dos instrutores associados
           price: course.priceValue,
           promotionalPrice: course.originalPriceValue || 0,
           sections: [],
+          isPublished: true, // Cursos existentes já estão publicados
         })
       }
     }
@@ -151,30 +159,25 @@ export default function EditarCursoPage() {
     setUnsavedChanges(true)
   }
 
-  const addInstructor = () => {
-    updateField("instructors", [...formData.instructors, ""])
-  }
-
-  const updateInstructor = (index: number, value: string) => {
-    const newInstructors = [...formData.instructors]
-    newInstructors[index] = value
-    updateField("instructors", newInstructors)
-  }
-
-  const removeInstructor = (index: number) => {
-    if (formData.instructors.length > 1) {
-      updateField(
-        "instructors",
-        formData.instructors.filter((_, i) => i !== index),
-      )
-    }
-  }
-
+  // Toggle de idiomas
   const toggleLanguage = (lang: string) => {
     const newLanguages = formData.languages.includes(lang)
       ? formData.languages.filter((l) => l !== lang)
       : [...formData.languages, lang]
     updateField("languages", newLanguages)
+  }
+
+  // Toggle de instrutores selecionados (multi-select)
+  const toggleInstructor = (instructorId: string) => {
+    const newSelectedIds = formData.selectedInstructorIds.includes(instructorId)
+      ? formData.selectedInstructorIds.filter((id) => id !== instructorId)
+      : [...formData.selectedInstructorIds, instructorId]
+    updateField("selectedInstructorIds", newSelectedIds)
+  }
+
+  // Toggle de status de publicação
+  const togglePublishStatus = () => {
+    updateField("isPublished", !formData.isPublished)
   }
 
   const addSection = () => {
@@ -252,13 +255,27 @@ export default function EditarCursoPage() {
   }
 
   const handleSave = () => {
-    console.log("Salvando curso:", formData)
+    console.log("Salvando treinamento:", formData)
     setUnsavedChanges(false)
-    alert("Curso salvo com sucesso!")
+    alert("Treinamento salvo com sucesso!")
   }
 
   const handlePreview = () => {
     window.open("/curso-vitrine?id=preview", "_blank")
+  }
+
+  // Mostra loading enquanto verifica autenticação
+  if (isLoading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
+            <p className="text-neutral-600">Verificando acesso...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!user || !isAdmin) {
@@ -269,8 +286,9 @@ export default function EditarCursoPage() {
     { id: "geral", label: "Informações Gerais", icon: FileText },
     { id: "preco", label: "Preço e Promoção", icon: DollarSign },
     { id: "modulos", label: "Módulos e Aulas", icon: BookOpen },
-    { id: "mensagens", label: "Mensagens do Curso", icon: MessageSquare },
-    { id: "publicar", label: "Publicar Curso", icon: Upload },
+    { id: "assinaturas", label: "Assinatura do Instrutor", icon: PenTool }, // Nova seção para assinaturas
+    { id: "mensagens", label: "Mensagens do Treinamento", icon: MessageSquare },
+    { id: "publicar", label: "Publicar Treinamento", icon: Upload },
   ]
 
   return (
@@ -281,18 +299,18 @@ export default function EditarCursoPage() {
             ← Voltar
           </Button>
           <div>
-            <h1 className="text-xl font-bold">{isNewCourse ? "Criar Novo Curso" : "Editar Curso"}</h1>
+            <h1 className="text-xl font-bold">{isNewCourse ? "Criar Novo Treinamento" : "Editar Treinamento"}</h1>
             {unsavedChanges && <p className="text-xs text-amber-600">● Alterações não salvas</p>}
           </div>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" onClick={handlePreview} className="bg-transparent">
             <Eye className="h-4 w-4 mr-2" />
-            Visualizar Curso
+            Visualizar Treinamento
           </Button>
           <Button onClick={handleSave} className="bg-teal-600 hover:bg-teal-700">
             <Save className="h-4 w-4 mr-2" />
-            Salvar Curso
+            Salvar Treinamento
           </Button>
         </div>
       </header>
@@ -327,12 +345,12 @@ export default function EditarCursoPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Informações Gerais</CardTitle>
-                  <CardDescription>Configure os detalhes básicos do curso</CardDescription>
+                  <CardDescription>Configure os detalhes básicos do treinamento</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="title">
-                      Título do curso <span className="text-red-500">*</span>
+                      Título do treinamento <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="title"
@@ -348,7 +366,7 @@ export default function EditarCursoPage() {
                     </Label>
                     <Textarea
                       id="shortDescription"
-                      placeholder="Uma breve descrição do curso (máx. 160 caracteres)"
+                      placeholder="Uma breve descrição do treinamento (máx. 160 caracteres)"
                       rows={2}
                       maxLength={160}
                       value={formData.shortDescription}
@@ -363,7 +381,7 @@ export default function EditarCursoPage() {
                     </Label>
                     <Textarea
                       id="bannerDescription"
-                      placeholder="Descrição que aparecerá no banner do curso"
+                      placeholder="Descrição que aparecerá no banner do treinamento"
                       rows={3}
                       value={formData.bannerDescription}
                       onChange={(e) => updateField("bannerDescription", e.target.value)}
@@ -374,7 +392,7 @@ export default function EditarCursoPage() {
                     <Label htmlFor="fullDescription">Descrição completa (Editor Rico)</Label>
                     <Textarea
                       id="fullDescription"
-                      placeholder="Descrição detalhada do curso..."
+                      placeholder="Descrição detalhada do treinamento..."
                       rows={6}
                       value={formData.fullDescription}
                       onChange={(e) => updateField("fullDescription", e.target.value)}
@@ -411,7 +429,7 @@ export default function EditarCursoPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="imageFile">
-                      Imagem do curso <span className="text-red-500">*</span>
+                      Imagem do treinamento <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="imageFile"
@@ -478,41 +496,7 @@ export default function EditarCursoPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label>
-                      Instrutor(es) <span className="text-red-500">*</span>
-                    </Label>
-                    {formData.instructors.map((instructor, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          placeholder={`Nome do instrutor ${index + 1}`}
-                          value={instructor}
-                          onChange={(e) => updateInstructor(index, e.target.value)}
-                        />
-                        {formData.instructors.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => removeInstructor(index)}
-                            className="bg-transparent"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addInstructor}
-                      className="bg-transparent"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Adicionar Instrutor
-                    </Button>
-                  </div>
+                  {/* Seção de Instrutores removida - agora centralizada na aba "Assinaturas" */}
                 </CardContent>
               </Card>
             )}
@@ -521,12 +505,12 @@ export default function EditarCursoPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Preço e Promoção</CardTitle>
-                  <CardDescription>Defina os valores do curso</CardDescription>
+                  <CardDescription>Defina os valores do treinamento</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="price">
-                      Preço do curso (R$) <span className="text-red-500">*</span>
+                      Preço do treinamento (R$) <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="price"
@@ -696,16 +680,70 @@ export default function EditarCursoPage() {
                                       PDF
                                     </TabsTrigger>
                                   </TabsList>
-                                  <TabsContent value="article" className="space-y-2">
-                                    <Textarea placeholder="Conteúdo do artigo..." rows={4} />
+
+                                  {/* Artigo com suporte multilíngue */}
+                                  <TabsContent value="article" className="space-y-3">
+                                    <div className="bg-slate-50 p-3 rounded-lg">
+                                      <Tabs defaultValue="pt" className="w-full">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <Label className="text-xs text-muted-foreground">Idioma do conteúdo:</Label>
+                                          <TabsList className="h-8">
+                                            <TabsTrigger value="pt" className="text-xs h-7 px-3">
+                                              Português
+                                            </TabsTrigger>
+                                            <TabsTrigger value="en" className="text-xs h-7 px-3">
+                                              Inglês
+                                            </TabsTrigger>
+                                          </TabsList>
+                                        </div>
+                                        <TabsContent value="pt" className="mt-0">
+                                          <Textarea placeholder="Conteúdo do artigo em Português..." rows={5} />
+                                        </TabsContent>
+                                        <TabsContent value="en" className="mt-0">
+                                          <Textarea placeholder="Article content in English..." rows={5} />
+                                        </TabsContent>
+                                      </Tabs>
+                                    </div>
                                   </TabsContent>
-                                  <TabsContent value="video" className="space-y-2">
+
+                                  {/* Vídeo com transcrições em ambos idiomas */}
+                                  <TabsContent value="video" className="space-y-3">
                                     <Input type="file" accept="video/*" />
-                                    <Textarea placeholder="Transcrição em Português" rows={3} />
-                                    <Textarea placeholder="Transcrição em Inglês" rows={3} />
+                                    <div className="bg-slate-50 p-3 rounded-lg">
+                                      <Tabs defaultValue="pt" className="w-full">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <Label className="text-xs text-muted-foreground">Transcrição:</Label>
+                                          <TabsList className="h-8">
+                                            <TabsTrigger value="pt" className="text-xs h-7 px-3">
+                                              Português
+                                            </TabsTrigger>
+                                            <TabsTrigger value="en" className="text-xs h-7 px-3">
+                                              Inglês
+                                            </TabsTrigger>
+                                          </TabsList>
+                                        </div>
+                                        <TabsContent value="pt" className="mt-0">
+                                          <Textarea placeholder="Transcrição em Português..." rows={4} />
+                                        </TabsContent>
+                                        <TabsContent value="en" className="mt-0">
+                                          <Textarea placeholder="Transcript in English..." rows={4} />
+                                        </TabsContent>
+                                      </Tabs>
+                                    </div>
                                   </TabsContent>
+
+                                  {/* PDF */}
                                   <TabsContent value="pdf">
-                                    <Input type="file" accept="application/pdf" />
+                                    <div className="bg-slate-50 p-3 rounded-lg space-y-3">
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground mb-2 block">PDF em Português:</Label>
+                                        <Input type="file" accept="application/pdf" />
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs text-muted-foreground mb-2 block">PDF em Inglês (opcional):</Label>
+                                        <Input type="file" accept="application/pdf" />
+                                      </div>
+                                    </div>
                                   </TabsContent>
                                 </Tabs>
                               </div>
@@ -785,10 +823,117 @@ export default function EditarCursoPage() {
               </div>
             )}
 
+            {/* SEÇÃO DE ASSINATURAS DO INSTRUTOR - Multi-select dos cadastrados */}
+            {activeSection === "assinaturas" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PenTool className="h-5 w-5 text-teal-600" />
+                    Vincular Instrutores
+                  </CardTitle>
+                  <CardDescription>
+                    Selecione os instrutores/responsáveis que assinarão o certificado deste treinamento.
+                    Os profissionais devem estar cadastrados em Painel {">"} Assinaturas.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Lista de instrutores disponíveis para seleção */}
+                  {mockInstructorSignatures.filter(s => s.isActive).length === 0 ? (
+                    <div className="text-center py-8 border rounded-lg border-dashed">
+                      <PenTool className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                      <p className="text-sm text-muted-foreground">Nenhum instrutor cadastrado</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Acesse Painel {">"} Assinaturas para cadastrar instrutores
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Label>Selecione os instrutores para este treinamento:</Label>
+                      {mockInstructorSignatures.filter(s => s.isActive).map((instructor) => (
+                        <div
+                          key={instructor.id}
+                          className={cn(
+                            "border rounded-lg p-4 cursor-pointer transition-all",
+                            formData.selectedInstructorIds.includes(instructor.id)
+                              ? "border-teal-500 bg-teal-50"
+                              : "border-gray-200 hover:border-gray-300 bg-white"
+                          )}
+                          onClick={() => toggleInstructor(instructor.id)}
+                        >
+                          <div className="flex items-start gap-4">
+                            <Checkbox
+                              checked={formData.selectedInstructorIds.includes(instructor.id)}
+                              onCheckedChange={() => toggleInstructor(instructor.id)}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-neutral-800">{instructor.fullName}</p>
+                                <Badge
+                                  variant="secondary"
+                                  className={
+                                    instructor.role === "responsavel"
+                                      ? "bg-purple-100 text-purple-800"
+                                      : "bg-blue-100 text-blue-800"
+                                  }
+                                >
+                                  {instructor.role === "responsavel" ? "Responsável" : "Instrutor"}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{instructor.technicalFormation}</p>
+                              {instructor.crea && (
+                                <p className="text-xs text-muted-foreground">CREA: {instructor.crea}</p>
+                              )}
+                            </div>
+                            {instructor.signatureImageUrl && (
+                              <div className="hidden sm:block border rounded p-2 bg-white">
+                                <img
+                                  src={instructor.signatureImageUrl}
+                                  alt={`Assinatura de ${instructor.fullName}`}
+                                  className="h-10 object-contain"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Resumo de instrutores selecionados */}
+                  {formData.selectedInstructorIds.length > 0 && (
+                    <div className="bg-teal-50 border border-teal-200 rounded p-4">
+                      <p className="text-sm font-medium text-teal-900 mb-2">
+                        Instrutores selecionados: {formData.selectedInstructorIds.length}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.selectedInstructorIds.map((id) => {
+                          const instructor = mockInstructorSignatures.find(s => s.id === id)
+                          return instructor ? (
+                            <Badge key={id} variant="secondary" className="bg-teal-100 text-teal-800">
+                              {instructor.fullName}
+                            </Badge>
+                          ) : null
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Informação sobre cadastro */}
+                  <div className="bg-amber-50 border border-amber-200 rounded p-4">
+                    <p className="text-sm text-amber-900">
+                      <strong>Dica:</strong> Para cadastrar novos instrutores ou responsáveis técnicos,
+                      acesse o menu <strong>Painel {">"} Assinaturas</strong>.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {activeSection === "mensagens" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Mensagens do Curso</CardTitle>
+                  <CardTitle>Mensagens do Treinamento</CardTitle>
                   <CardDescription>Configure mensagens automáticas e emails</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -800,19 +945,78 @@ export default function EditarCursoPage() {
             {activeSection === "publicar" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Publicar Curso</CardTitle>
-                  <CardDescription>Torne o curso disponível para os alunos</CardDescription>
+                  <CardTitle>Status de Publicação</CardTitle>
+                  <CardDescription>Gerencie a visibilidade do treinamento para os alunos</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded p-4">
-                    <p className="text-sm text-amber-900">
-                      <strong>Atenção:</strong> Certifique-se de revisar todas as informações antes de publicar.
-                    </p>
+                <CardContent className="space-y-6">
+                  {/* Status atual */}
+                  <div className={cn(
+                    "flex items-center justify-between p-4 rounded-lg border",
+                    formData.isPublished 
+                      ? "bg-green-50 border-green-200" 
+                      : "bg-gray-50 border-gray-200"
+                  )}>
+                    <div>
+                      <p className="font-medium text-neutral-800">Status Atual</p>
+                      <p className="text-sm text-muted-foreground">
+                        {formData.isPublished 
+                          ? "Este treinamento está visível para os alunos"
+                          : "Este treinamento está oculto (rascunho)"
+                        }
+                      </p>
+                    </div>
+                    <Badge
+                      variant={formData.isPublished ? "default" : "secondary"}
+                      className={
+                        formData.isPublished 
+                          ? "bg-green-100 text-green-800 hover:bg-green-100"
+                          : "bg-gray-100 text-gray-800 hover:bg-gray-100"
+                      }
+                    >
+                      {formData.isPublished ? "Publicado" : "Rascunho"}
+                    </Badge>
                   </div>
-                  <Button className="w-full bg-teal-600 hover:bg-teal-700" size="lg">
-                    <Upload className="h-5 w-5 mr-2" />
-                    Publicar Curso
-                  </Button>
+
+                  {/* Avisos */}
+                  {!formData.isPublished && (
+                    <div className="bg-amber-50 border border-amber-200 rounded p-4">
+                      <p className="text-sm text-amber-900">
+                        <strong>Atenção:</strong> Certifique-se de revisar todas as informações antes de publicar.
+                        Verifique se os módulos, aulas e instrutores estão corretamente configurados.
+                      </p>
+                    </div>
+                  )}
+
+                  {formData.isPublished && (
+                    <div className="bg-red-50 border border-red-200 rounded p-4">
+                      <p className="text-sm text-red-900">
+                        <strong>Cuidado:</strong> Ao despublicar, os alunos não poderão mais acessar este treinamento
+                        na vitrine. Alunos já matriculados continuarão com acesso.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Botão de ação */}
+                  {formData.isPublished ? (
+                    <Button 
+                      onClick={togglePublishStatus}
+                      variant="outline"
+                      className="w-full border-red-300 text-red-700 hover:bg-red-50 bg-transparent" 
+                      size="lg"
+                    >
+                      <X className="h-5 w-5 mr-2" />
+                      Despublicar Treinamento
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={togglePublishStatus}
+                      className="w-full bg-teal-600 hover:bg-teal-700" 
+                      size="lg"
+                    >
+                      <Upload className="h-5 w-5 mr-2" />
+                      Publicar Treinamento
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -820,13 +1024,17 @@ export default function EditarCursoPage() {
         </main>
       </div>
 
+      {/* Modal de confirmação de exclusão de módulo/item */}
       <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogTitle>Tem certeza que deseja excluir?</AlertDialogTitle>
             <AlertDialogDescription>
-              Você tem certeza que deseja deletar este {itemToDelete?.itemId ? "item" : "seção"}? Esta ação não pode ser
-              desfeita.
+              {itemToDelete?.itemId 
+                ? "Este item será removido permanentemente do módulo."
+                : "Este módulo e todos os seus itens serão removidos permanentemente."
+              }
+              {" "}Esta ação não pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -843,7 +1051,7 @@ export default function EditarCursoPage() {
               }}
               className="bg-red-600 hover:bg-red-700"
             >
-              Confirmar Exclusão
+              Sim, excluir
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

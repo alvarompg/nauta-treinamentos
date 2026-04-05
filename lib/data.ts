@@ -165,6 +165,28 @@ export interface CourseSection {
 }
 
 // ============================================
+// INTERFACE PARA ASSINATURAS DE INSTRUTORES
+// ============================================
+// Define a estrutura de dados para instrutores/responsáveis
+// Usada para vincular assinaturas aos certificados dos treinamentos
+
+export type SignatureRole = "instrutor" | "responsavel"
+
+export interface InstructorSignature {
+  id: string
+  fullName: string // Nome completo do instrutor/responsável
+  role: SignatureRole // Perfil: instrutor ou responsável técnico
+  crea?: string // Número do CREA (opcional para instrutores sem registro)
+  technicalFormation: string // Formação técnica (ex: Engenheiro Naval)
+  cpf: string // CPF do profissional
+  phone: string // Telefone de contato
+  email: string // E-mail do profissional
+  signatureImageUrl: string // URL da imagem da assinatura digitalizada
+  createdAt: string // Data de criação do registro
+  isActive: boolean // Se a assinatura está ativa para uso
+}
+
+// ============================================
 // DADOS MOCKADOS
 // ============================================
 
@@ -1690,5 +1712,52 @@ export const mockQuizzes: Quiz[] = [
           "O vigia deve permanecer do lado de fora, monitorando constantemente os trabalhadores e acionando os procedimentos de emergência se necessário.",
       },
     ],
+  },
+]
+
+// ============================================
+// DADOS MOCKADOS DE ASSINATURAS/INSTRUTORES
+// ============================================
+// Dados de exemplo para instrutores e responsáveis técnicos
+// Em produção, esses dados viriam de uma API/banco de dados
+
+export const mockInstructorSignatures: InstructorSignature[] = [
+  {
+    id: "sig-1",
+    fullName: "Dr. Carlos Eduardo da Silva",
+    role: "responsavel",
+    crea: "123456/D-RJ",
+    technicalFormation: "Engenheiro Naval",
+    cpf: "123.456.789-00",
+    phone: "(21) 99999-1234",
+    email: "carlos.silva@nautatreinamentos.com.br",
+    signatureImageUrl: "/placeholder.svg?height=100&width=300&text=Assinatura+Carlos",
+    createdAt: "2024-01-15",
+    isActive: true,
+  },
+  {
+    id: "sig-2",
+    fullName: "Ana Paula Ferreira Santos",
+    role: "instrutor",
+    crea: "654321/D-SP",
+    technicalFormation: "Técnica em Segurança do Trabalho",
+    cpf: "987.654.321-00",
+    phone: "(11) 98888-5678",
+    email: "ana.ferreira@nautatreinamentos.com.br",
+    signatureImageUrl: "/placeholder.svg?height=100&width=300&text=Assinatura+Ana",
+    createdAt: "2024-02-20",
+    isActive: true,
+  },
+  {
+    id: "sig-3",
+    fullName: "Roberto Mendes Oliveira",
+    role: "instrutor",
+    technicalFormation: "Bombeiro Civil - NR-23",
+    cpf: "456.789.123-00",
+    phone: "(21) 97777-9012",
+    email: "roberto.oliveira@nautatreinamentos.com.br",
+    signatureImageUrl: "/placeholder.svg?height=100&width=300&text=Assinatura+Roberto",
+    createdAt: "2024-03-10",
+    isActive: true,
   },
 ]
